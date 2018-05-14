@@ -8,15 +8,14 @@ public abstract class Person {
 	private String gender;
 	private String photo;
 	private String status;
-	public ArrayList<Connection> friends = new ArrayList<>(); // ArrayList to store a persons friends
 	
 	/**
 	 * This method is the class constructor. This constructor was not overloaded as the optional nature of
 	 * the photo and status instance variables is factored in within the following methods:
 	 * <ul>
 	 * 	<li> <code>setPhoto()</code> Will set photo to "No Photo" if nothing is entered (empty string) by the user </li>
-	 *  <li> <code>setStatus()</code> Will set status to "No Status" if nothing is entered (empty string) by the user </li>
-	 *  <li><code>addPhoto()</code> Will set photo to "No Photo" if the user decides not to include a photo when adding a member</li>
+	 *  	<li> <code>setStatus()</code> Will set status to "No Status" if nothing is entered (empty string) by the user </li>
+	 *  	<li><code>addPhoto()</code> Will set photo to "No Photo" if the user decides not to include a photo when adding a member</li>
 	 *  	<li><code>addStatus()</code> Will set status to "No Status" if the user decides not to include a status when adding a member</li>
 	 * </ul>
 	 * @param userID Persons userID (must be unique).
@@ -141,68 +140,6 @@ public abstract class Person {
 		else {
 			status = s;
 		}
-	}
-	
-	/**
-	 * This method adds someone to this persons friends ListArray.
-	 * @param person Person being added to this persons the friends ListArray.
-	 */
-	public void addFriend(Person person) {
-		friends.add(new Connection(person));
-	}
-	
-	/**
-	 * This method is declared as abstract as it will need to be implemented differently for
-	 * each subclass of Person. For example, for Child references, there will be no need to
-	 * print dependents because, for the purposes of this project, they can't have any dependents.
-	 */
-	public void displayFriends() {
-		if (friends.size() > 0) {
-			System.out.println();
-			System.out.println("Friends: ");
-			for (int i = 0; i < friends.size(); i++) {
-				System.out.println(friends.get(i).getPerson().getFullName());
-			}			
-		}
-	}
-	
-	/**
-	 * @return The number of friends in a persons friends ListArray.
-	 */
-	public int numberOfFriends() {
-		return friends.size();
-	}
-	
-	/**
-	 * This method determines whether one person if friends with another on MiniNet.
-	 * @param userID The MiniNet ID of person who may be friends with this person.
-	 * @return boolean Depending on whether userID is in persons friends ListArray.
-	 */
-	public boolean isFriend(String userID) {
-		boolean isAFriend = false;
-		
-		for (int i = 0; i < friends.size(); i++) {
-			if (friends.get(i).getPerson().getUserID().equals(userID)) {
-				isAFriend = true;
-			}
-		}
-		return isAFriend;
-	}
-	
-	 /**
-	  * This method returns a copy of the callers friends ArrayList.
-	  * @return ArrayList<Connection> Returns the callers friends ArrayList.
-	  */
-	public ArrayList<Connection> getFriends() {
-		return friends;
-	}
-	
-	/**
-	 * This method removes the i-th person in the callers friends ArrayList. 
-	 * @param i Integer index of the friend.
-	 */
-	public void removeFriend(int i) {
-		friends.remove(i);
 	}
 	
 }
