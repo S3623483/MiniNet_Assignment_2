@@ -2,10 +2,10 @@ import java.util.*;
 
 public class Driver2 {
 	
-	private ArrayList<Person> members = new ArrayList<>();			    // ArrayList holding all members of MiniNet
-	private ArrayList<Connection> connections = new ArrayList<>();	// ArrayList holding all connections of MiniNet
-	private int choiceMain;											                    // User input in the mainMenu() method
-	private int updateMenu;											                    // User input in selectPerson() method
+	private ArrayList<Person> members = new ArrayList<>();			// ArrayList holding all members of MiniNet
+	private ArrayList<Connection> connections = new ArrayList<>();		// ArrayList holding all connections of MiniNet
+	private int choiceMain;							// User input in the mainMenu() method
+	private int updateMenu;							// User input in selectPerson() method
 	
 	/**
 	 * This method populates MiniNet with members and establishes
@@ -144,7 +144,23 @@ public class Driver2 {
 		
 		String newUserID = addUserID();
 		String newFullName = addName();
-		int newAge = addAge();
+		
+		boolean validAge = false;
+		int newAge = 0;
+		do {
+			try {
+				newAge = addAge();
+				validAge = true;
+			}
+			catch (NoSuchAgeException nsae) {
+				System.out.println();
+			}
+			catch (NumberFormatException nfe) {
+				System.out.println("Age must be an integer between 0 and 150 (inclusive)");
+				System.out.println();
+			}
+		} while (!validAge);
+		
 		String newGender = addGender();
 		String newStatus = addStatus();
 		String newPhoto = addPhoto();
@@ -153,12 +169,12 @@ public class Driver2 {
 			members.add(new Adult(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));			
 		}
 		else if (newAge < 16 && newAge > 2) {
-			addParents(newUserID);
 			members.add(new Child(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));
+			addParents(newUserID);
 		}
 		else {
-			addParents(newUserID);
 			members.add(new Baby(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));
+			addParents(newUserID);
 		}
 	}
 	
@@ -437,35 +453,23 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method obtains and returns the age of a new member.
+	 * This method obtains and returns the age of a new member. As per the requirements
+	 * of the assignment, this method throws two Exceptions (NoSuchAgeException &
+	 * NumberFormatException). NoSuchAgeException ensures the age inputted by the user
+	 * is between 0 and 150 (inclusive).
 	 * @return int The age of the new member.
 	 */
-	private int addAge() {
+	private int addAge() throws NoSuchAgeException, NumberFormatException {
 		Scanner input = new Scanner(System.in);
 		boolean valid = false;
-		int newAge = 0;
 		
-		do {
-			try {
-				System.out.print("Enter your age: ");
-				String newAgeString = input.nextLine();
-				newAge = Integer.parseInt(newAgeString);
+		System.out.print("Enter your age: ");
+		String newAgeString = input.nextLine();
+		int newAge = Integer.parseInt(newAgeString);
 				
-				if (newAge <= 0) {
-					throw new Exception();
-				}
-				valid = true;
-			}
-			catch (NumberFormatException nfe)
-			{
-				System.out.println("Age must be a positive integer.");
-			}
-			catch (Exception e)
-			{
-				System.out.println("Age must be a positive integer.");
-			}
+		if (newAge < 0 || newAge > 150) {
+			throw new NoSuchAgeException("Invalid age has been entered", newAge);
 		}
-		while (!valid);
 		return newAge;
 	}
 	
@@ -587,7 +591,6 @@ public class Driver2 {
 				
 		addMember();
 		
-	}
-	
+	}	
 	
 }
