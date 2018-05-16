@@ -773,7 +773,7 @@ public class Driver2 {
 			System.out.println("No! Baby can not be in Classmate connection.");
 		}
 		catch (NoAvailableException nae) {
-			System.out.println("One or both of these people are cheating turds.");
+			System.out.println("One or both of these members are connected with another adult as a couple");
 		}
 		catch (NotToBeCoupledException ntbce) {
 			System.out.println("A Child or Baby can not be part of a couple.");
