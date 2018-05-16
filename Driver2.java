@@ -26,6 +26,7 @@ public class Driver2 {
 		members.add(new Adult("KATEBOSWORTH", "Kate Bosworth", 35, "F", "katebos.photo", "I'm on set at the moment"));
 		members.add(new Adult("THESIMONA", "Simona Halep", 26, "F", "WTASimona.photo", "No Status"));
 		members.add(new Child("LDONNELLY", "Louis Donnelly", 10, "M", "louis.photo", "No Status"));
+		members.add(new Child("NDONNELLY", "Nate Donnelly", 5, "M", "louis.photo", "No Status"));
 		members.add(new Baby("LITTLEONE", "Lucy Donnelly", 1, "F", "No Photo", "No Status"));
 		
 		/*
@@ -41,9 +42,9 @@ public class Driver2 {
 		connections.add(new Connection(members.get(7), members.get(8), "Friend"));
 		connections.add(new Connection(members.get(8), members.get(0), "Friend"));
 		connections.add(new Connection(members.get(1), members.get(6), "Friend"));
-		connections.add(new Connection(members.get(2), members.get(7), "Friend"));
-		connections.add(new Connection(members.get(0), members.get(4), "Friend"));
-		connections.add(new Connection(members.get(0), members.get(1), "Partner"));		
+		connections.add(new Connection(members.get(2), members.get(7), "Classmate"));
+		connections.add(new Connection(members.get(0), members.get(4), "Colleague"));
+		connections.add(new Connection(members.get(0), members.get(1), "Couple"));		
 		/*
 		 * Add parent / child connections for the Child & Baby members of MiniNet
 		 */
@@ -51,10 +52,6 @@ public class Driver2 {
 		connections.add(new Connection(members.get(0), members.get(11), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(10), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(11), "Parent"));
-		connections.add(new Connection(members.get(10), members.get(0), "Child"));
-		connections.add(new Connection(members.get(10), members.get(1), "Child"));
-		connections.add(new Connection(members.get(11), members.get(0), "Child"));
-		connections.add(new Connection(members.get(11), members.get(1), "Child"));
 	}
 	
 	/**
@@ -93,6 +90,175 @@ public class Driver2 {
 				System.out.println(connections.get(i).getPerson1().getFullName() + "\t\t\t" + connections.get(i).getType());
 			}
 		}
+	}
+	
+	private void addConnection(String userID1, String userID2, String type) throws NotToBeFriendsException, SamePersonException, AlreadyConnectedException, NotToBeClassmatesException, NoAvailableException, NotToBeCoupledException, NotToBeColleaguesException {
+		int index1 = memberIndex(userID1);		// get index position for userID1
+		int index2 = memberIndex(userID2);		// get index position for userID2
+		Person person1 = members.get(index1);	// get Person reference for userID1
+		Person person2 = members.get(index2);	// get Person reference for userID2
+		boolean alreadyFriends = alreadyFriends(person1, person2);
+		boolean alreadyClassmates = alreadyClassmates(person1, person2);
+		boolean alreadyColleagues = alreadyColleagues(person1, person2);
+		
+		/*
+		 * Make sure the user is not trying to connect the same person.
+		 */
+		if (index1 == index2) {
+			throw new SamePersonException("You are trying to connect the same person.");
+		}
+		
+		// types include friend, couple, classmate, colleague
+		if (type.equals("Friend")) {
+			if (alreadyFriends == true) {
+				throw new AlreadyConnectedException("The two members are already friends.");
+			}
+			else {
+				addFriend(person1, person2);
+			}
+
+		}
+		else if (type.equals("Classmate")) {
+			if (alreadyClassmates == true) {
+				throw new AlreadyConnectedException("The two members are already friends.");
+			}
+			else {
+				addClassmate(person1, person2);
+			}
+		}
+		else if (type.equals("Couple")) {
+			addCouple(person1, person2);
+		}
+		else if (type.equals("Colleague")) {
+			if (alreadyColleagues == true) {
+				throw new AlreadyConnectedException("The two members are already friends.");
+			}
+			else {
+				addColleague(person1, person2);				
+			}
+		}
+	}
+	
+	private void addFriend(Person person1, Person person2) throws NotToBeFriendsException {
+		int person1Age = person1.getAge();
+		int person2Age = person2.getAge();
+		int ageGap = Math.abs(person1Age - person2Age);
+				
+		if (person1 instanceof Adult && person2 instanceof Adult) {
+			connections.add(new Connection(person1, person2, "Friend"));
+		}
+		else if (person1 instanceof Baby || person2 instanceof Baby) {
+			throw new NotToBeFriendsException("A baby can not have any friends connections.");
+		}
+		else if (person1 instanceof Adult && person2 instanceof Child) {
+			throw new NotToBeFriendsException("An adult and a child can not have a friendship connection.");
+		}
+		else if (person1 instanceof Child && person2 instanceof Child && ageGap > 3) {
+			throw new NotToBeFriendsException("Two children with an age gap greater than 3 can not have a friendship connection.");
+		}
+		else if (person1 instanceof Child && person2 instanceof Child && ageGap <= 3) {
+			connections.add(new Connection(person1, person2, "Friend"));
+		}
+	}
+	
+	private void addClassmate(Person person1, Person person2) throws NotToBeClassmatesException {
+		if (person1 instanceof Baby || person2 instanceof Baby) {
+			throw new NotToBeClassmatesException("A baby can not have any classmate connections.");
+		}
+		else {
+			connections.add(new Connection(person1, person2, "Classmate"));
+		}
+	}
+	
+	private void addCouple(Person person1, Person person2) throws NoAvailableException, NotToBeCoupledException {
+		boolean alreadyCoupled = alreadyCoupled(person1, person2);
+		
+		if (alreadyCoupled == true) {
+			throw new NoAvailableException("Already Coupled.");
+		}
+		else if (person1 instanceof Baby || person2 instanceof Baby) {
+			throw new NotToBeCoupledException("A baby can not be part of a couple.");
+		}
+		else if (person1 instanceof Child || person2 instanceof Child) {
+			throw new NotToBeCoupledException("A child can not be part of a couple.");
+		}
+		else {
+			connections.add(new Connection(person1, person2, "Couple"));
+		}
+	}
+	
+	private void addColleague(Person person1, Person person2) throws NotToBeColleaguesException {
+		if (person1 instanceof Baby || person2 instanceof Baby) {
+			throw new NotToBeColleaguesException("A baby can not have any colleague connections.");
+		}
+		else {
+			connections.add(new Connection(person1, person2, "Colleague"));
+		}
+	}
+	
+	private boolean alreadyFriends(Person person1, Person person2) {
+		boolean alreadyFriends = false;
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Friend")) {
+				alreadyFriends = true;
+			}
+			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Friend")) {
+				alreadyFriends = true;
+			}
+		}
+		return alreadyFriends;
+	}
+	
+	private boolean alreadyClassmates(Person person1, Person person2) {
+		boolean alreadyClassmates = false;
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Classmate")) {
+				alreadyClassmates = true;
+			}
+			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Classmate")) {
+				alreadyClassmates = true;
+			}
+		}
+		return alreadyClassmates;
+	}
+	
+	private boolean alreadyCoupled(Person person1, Person person2) {
+		boolean alreadyCoupled = false;
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Couple")) {
+				alreadyCoupled = true;
+			}
+			else if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() != person2 && connections.get(i).getType().equals("Couple")) {
+				alreadyCoupled = true;
+			}
+			else if (connections.get(i).getPerson1() != person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Couple")) {
+				alreadyCoupled = true;
+			}
+			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() != person1 && connections.get(i).getType().equals("Couple")) {
+				alreadyCoupled = true;
+			}
+			else if (connections.get(i).getPerson1() != person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Couple")) {
+				alreadyCoupled = true;
+			}
+		}
+		return alreadyCoupled;
+	}
+	
+	private boolean alreadyColleagues(Person person1, Person person2) {
+		boolean alreadyColleagues = false;
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Colleague")) {
+				alreadyColleagues = true;
+			}
+			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Colleague")) {
+				alreadyColleagues = true;
+			}
+		}
+		return alreadyColleagues;
 	}
 	
 	/**
@@ -583,14 +749,45 @@ public class Driver2 {
 		
 		// showAllConnections();
 		
-		// Person tester = members.get(1);
+		Person tester1 = members.get(2);
+		Person tester2 = members.get(7);
+		boolean hopefully = alreadyFriends(tester1, tester2);
+		System.out.println(hopefully);
 		
-		System.out.println();
+		String no1 = "BEN1984";
+		String no2 = "THEBROW";
+		
+		try {
+			addConnection(no1, no2, "Colleague");
+		}
+		catch (NotToBeFriendsException ntbfe) {
+			System.out.println("No! Not To Be!");
+		}
+		catch (AlreadyConnectedException ace) {
+			System.out.println("No! Already Friends.");
+		}
+		catch (SamePersonException spe) {
+			System.out.println("No! They're the same person stupid.");
+		}
+		catch (NotToBeClassmatesException ntbce) {
+			System.out.println("No! Baby can not be in Classmate connection.");
+		}
+		catch (NoAvailableException nae) {
+			System.out.println("One or both of these people are cheating turds.");
+		}
+		catch (NotToBeCoupledException ntbce) {
+			System.out.println("A Child or Baby can not be part of a couple.");
+		}
+		catch (NotToBeColleaguesException ntbce) {
+			System.out.println("No! Baby can not be in Colleague connection.");
+		}
+		
+		showAllConnections();
 		
 		// showMemberConnections(tester);
 				
-		addMember();
+		//addMember();
 		
-	}	
+	}
 	
 }
