@@ -9,7 +9,7 @@
 public class NotToBeClassmatesException extends Exception {
 	
 	/**
-	 * Constructor method for NoSuchAgeException.
+	 * Constructor method for NotToBeClassmatesException.
 	 * @param errMsg Error message passed to the constructor.
 	 */
 	public NotToBeClassmatesException(String errMsg) {
