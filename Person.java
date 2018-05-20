@@ -1,13 +1,18 @@
-import java.util.ArrayList;
 
+/**
+ * Abstract class from which Adult, Child & Baby extend. This class provides methods that can be used by allof its subclasses.
+ * @author Benjamin R Donnelly [S3623483]
+ * @version 1.1
+ * @since 2018-03-18
+ */
 public abstract class Person {
 	
-	private String userID;
-	private String fullName;
-	private int age;
-	private String gender;
-	private String photo;
-	private String status;
+	private String userID;		// Person's userID which is their unique identifier.
+	private String fullName;	// Person's full name.
+	private int age;		// Person's age.
+	private String gender;		// Person's gender.
+	private String photo;		// Person's photo. Optional field. Set to "No Photo" if the user decides not to include a photo.
+	private String status;		// Person's status. Optional field. Set to "No Status if the user decides not to include a photo.
 	
 	/**
 	 * This method is the class constructor. This constructor was not overloaded as the optional nature of
