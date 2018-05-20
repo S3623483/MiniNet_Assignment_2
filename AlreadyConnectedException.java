@@ -5,6 +5,7 @@
  * to connection two people as friends who are already friends on MiniNet.
  * @author Benjamin R Donnelly [S3623483]
  * @version 1.0
+ * @since 2018-05-16
  */
 public class AlreadyConnectedException extends Exception {
 	
