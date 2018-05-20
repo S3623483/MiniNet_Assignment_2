@@ -3,7 +3,7 @@
  * This Exception is thrown when the user tries to connect to adults
  * as a couple and at least one of them is already connected with another
  * adult as a couple.
- * @author Benjamin R Donnelly
+ * @author Benjamin R Donnelly [S3623483]
  * @version 1.0
  * @since 2018-05-16
  */
