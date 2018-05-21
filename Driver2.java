@@ -1,17 +1,104 @@
 import java.util.*;
+import java.io.*;
 
+/**
+ * 
+ * @author Benjamin R Donnelly [S3623483]
+ * @version 1.1
+ * @since 2018-03-18
+ */
 public class Driver2 {
 	
-	private ArrayList<Person> members = new ArrayList<>();			// ArrayList holding all members of MiniNet
-	private ArrayList<Connection> connections = new ArrayList<>();		// ArrayList holding all connections of MiniNet
-	private int choiceMain;							// User input in the mainMenu() method
-	private int updateMenu;							// User input in selectPerson() method
+	private ArrayList<Person> members = new ArrayList<>();		// ArrayList holding all members of MiniNet
+	private ArrayList<Connection> connections = new ArrayList<>();	// ArrayList holding all connections of MiniNet
 	
 	/**
 	 * This method populates MiniNet with members and establishes
 	 * connections between some of the members.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InvalidParentException
 	 */
-	private void populate() {
+	public void populate() throws FileNotFoundException, IOException, InvalidParentException {
+		String membersFile = "people.txt";
+		String relationsFile = "relations.txt";
+		String line1;
+		/*
+		 * Add members from people.txt.
+		 */
+        File membersFileReader = new File("people.txt");
+        BufferedReader membersFileBufferedReader = new BufferedReader(new FileReader(membersFileReader));
+        
+        while((line1 = membersFileBufferedReader.readLine()) != null) {
+        		String[] parts = line1.split(", ");
+        		int age = Integer.parseInt(parts[2]);
+        		/*
+        		 * Add members of different type (Adult, Child, Baby) based on their age.
+        		 */
+        		if (age >= 16) {
+        			members.add(new Adult(parts[0].toUpperCase(), parts[1], age, parts[3], parts[4], parts[5]));
+        		}
+        		else if (age < 16 && age > 2) {
+        			members.add(new Child(parts[0].toUpperCase(), parts[1], age, parts[3], parts[4], parts[5]));
+        		}
+        		else {
+        			members.add(new Baby(parts[0].toUpperCase(), parts[1], age, parts[3], parts[4], parts[5]));
+        		}
+        }
+        membersFileBufferedReader.close();
+        /*
+         * Add connections from relations.txt.
+         */
+        File connectionsFileReader = new File("relations.txt");
+        BufferedReader connectionsFileBufferedReader = new BufferedReader(new FileReader(connectionsFileReader));
+        String line2;
+        while((line2 = connectionsFileBufferedReader.readLine()) != null) {
+    		String[] parts = line2.split(", ");
+    		/*
+    		 * Add connections
+    		 */
+    		connections.add(new Connection(getPerson(parts[0]), getPerson(parts[1]), parts[2]));
+        }
+        connectionsFileBufferedReader.close();
+        /*
+         * The only error we need to search are a Child or Baby not being connected to both of their parents.
+         * If we find such an example, the Child or Baby is to be removed from MiniNet. This search of connections
+         * for invalid Child or Baby members is done through the checkConnections method.
+         */
+        ArrayList<Person> invalidMembers = checkConnections(connections);
+        /*
+         * Now we loop through invalidMembers and members to remove any invalid Child or Baby members.
+         */
+        for (int i = 0; i < invalidMembers.size(); i++) {
+        		for (int j = 0; j < members.size(); j++) {
+        			if (invalidMembers.get(i) == members.get(j)) {
+        				members.remove(j);
+        			}
+        		}
+        }
+        /*
+         * Next, we loop through connections to remove connections including any invalid Child or
+         * Baby members.
+         */
+        for (int i = 0; i < invalidMembers.size(); i++) {
+    			for (int j = 0; j < connections.size(); j++) {
+    				if ((invalidMembers.get(i) == connections.get(j).getPerson1()) || (invalidMembers.get(i) == connections.get(j).getPerson2())) {
+    					connections.remove(j);
+    				}
+    			}
+        }
+        /*
+         * Finally, we throw an InvalidParentException to notify the user upon opening the application.
+         */
+        if (invalidMembers.size() > 0) {
+        		throw new InvalidParentException("One or more Child or Baby members do not have both parents listed.");
+        }
+	}
+	
+	/**
+	 * 
+	 */
+	public void populate2() {
 		/*
 		 * Add initial members of MiniNet.
 		 */
@@ -28,13 +115,12 @@ public class Driver2 {
 		members.add(new Child("LDONNELLY", "Louis Donnelly", 10, "M", "louis.photo", "No Status"));
 		members.add(new Child("NDONNELLY", "Nate Donnelly", 5, "M", "louis.photo", "No Status"));
 		members.add(new Baby("LITTLEONE", "Lucy Donnelly", 1, "F", "No Photo", "No Status"));
-		
 		/*
-		 * Add initial connections between members of MiniNet
+		 * Add initial connections between members of MiniNet.
 		 */
 		connections.add(new Connection(members.get(0), members.get(1), "Friend"));
 		connections.add(new Connection(members.get(1), members.get(2), "Friend"));
-		connections.add(new Connection(members.get(2), members.get(3), "Friend"));
+		connections.add(new Connection(members.get(2), members.get(4), "Friend"));
 		connections.add(new Connection(members.get(3), members.get(4), "Friend"));
 		connections.add(new Connection(members.get(4), members.get(5), "Friend"));
 		connections.add(new Connection(members.get(5), members.get(6), "Friend"));
@@ -46,12 +132,60 @@ public class Driver2 {
 		connections.add(new Connection(members.get(0), members.get(4), "Colleague"));
 		connections.add(new Connection(members.get(0), members.get(1), "Couple"));		
 		/*
-		 * Add parent / child connections for the Child & Baby members of MiniNet
+		 * Add parent / child connections for the Child & Baby members of MiniNet.
 		 */
 		connections.add(new Connection(members.get(0), members.get(10), "Parent"));
 		connections.add(new Connection(members.get(0), members.get(11), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(10), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(11), "Parent"));
+	}
+	
+	/**
+	 * 
+	 * @param connections
+	 * @return
+	 */
+	private ArrayList<Person> checkConnections(ArrayList<Connection> connections) {
+		ArrayList<Person> invalidMembers = new ArrayList<>();
+		int noOfParents = 0;
+		
+		for (int i = 0; i < members.size(); i++) {
+			if (members.get(i) instanceof Child || members.get(i) instanceof Baby) {
+				for (int j = 0; j < connections.size(); j++) {
+					if ((connections.get(j).getPerson1() == members.get(i) && connections.get(j).getType().equals("Parent")) || (connections.get(j).getPerson2() == members.get(i) && connections.get(j).getType().equals("Parent"))) {
+						noOfParents += 1;
+					}
+				}
+				if (noOfParents != 2) {
+					invalidMembers.add(members.get(i));
+					System.out.println(members.get(i).getFullName() + " does not have both parents listed.");
+					System.out.println("This violates MiniNet rules.");
+					System.out.println("As such, " + members.get(i).getFullName() + " has been removed from MiniNet.");
+					noOfParents = 0; // reset noOfParent for the next iteration.
+				}
+				else {
+					noOfParents = 0; // reset noOfParent for the next iteration.
+				}				
+			}
+		}
+		return invalidMembers;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ArrayList<String> getUserIDs() {
+		ArrayList<String> userIDs = new ArrayList<>();
+		
+		for (int i = 0; i < members.size(); i++) {
+			userIDs.add(members.get(i).getUserID());
+		}
+		return userIDs;
+	}
+	
+	public ArrayList<Person> getMembers() {
+		return members;
 	}
 	
 	/**
@@ -68,31 +202,121 @@ public class Driver2 {
 	 * This method displays to the console the details of each connection in
 	 * MiniNet. The fullName of both members in the connection and the type of connection
 	 * are printed on a separate for each connection and are separated three tabs ("\t").
+	 * @return
 	 */
-	private void showAllConnections() {
+	public ArrayList<Connection> getConnections() {
+		ArrayList<Connection> allConnections = new ArrayList<>();
 		for(int i = 0; i < connections.size(); i++) {
-			System.out.println(connections.get(i).getPerson1().getFullName() + "\t\t\t" + connections.get(i).getPerson2().getFullName() + "\t\t\t" + connections.get(i).getType());
+			allConnections.add(connections.get(i));
+		}
+		return allConnections;
+	}
+	
+	/**
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public ArrayList<Connection> showMemberConnections(Person person) {
+		ArrayList<Connection> memberConnections = new ArrayList<>();
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1().equals(person)) {
+				memberConnections.add(connections.get(i));
+				//System.out.println(connections.get(i).getPerson2().getFullName() + "\t\t\t" + connections.get(i).getType());
+			}
+			
+			if (connections.get(i).getPerson2().equals(person)) {
+				memberConnections.add(connections.get(i));
+				//System.out.println(connections.get(i).getPerson1().getFullName() + "\t\t\t" + connections.get(i).getType());
+			}
+		}
+		return memberConnections;
+	}
+	
+	/**
+	 * 
+	 * @param userID
+	 * @return
+	 */
+	private ArrayList<String> getConnectionUserIDs(String userID) {
+		ArrayList<String> connectionUserIDs = new ArrayList<>();
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1().getUserID().equals(userID)) {
+				connectionUserIDs.add(connections.get(i).getPerson2().getUserID());
+			}
+			else if (connections.get(i).getPerson2().getUserID().equals(userID)) {
+				connectionUserIDs.add(connections.get(i).getPerson1().getUserID());
+			}
+		}
+		return connectionUserIDs;
+	}
+	
+	/**
+	 * 
+	 * @param userID
+	 * @throws NotToBeDeletedException
+	 */
+	public void remove(String userID) throws NotToBeDeletedException {
+		int removeIndex = memberIndex(userID);
+		Person removePerson = members.get(removeIndex);
+		
+		System.out.println(removePerson.getFullName());
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if ((connections.get(i).getPerson1() == removePerson && connections.get(i).getType().equals("Parent")) || (connections.get(i).getPerson2() == removePerson && connections.get(i).getType().equals("Parent"))) {
+				throw new NotToBeDeletedException(userID + " can not be deleted as they are a parent on MiniNet.");
+			}
+		}
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if ((connections.get(i).getPerson1() == removePerson) || (connections.get(i).getPerson2() == removePerson)) {
+				connections.remove(i);
+			}
+		}
+		
+		for (int i = 0; i < members.size(); i++) {
+			if (members.get(i) == removePerson) {
+				members.remove(i);
+			}
 		}
 	}
 	
 	/**
-	 * This method prints to the console the fullName and type of connections for
-	 * the Person listed as the methods argument.
-	 * @param person The Person whose connections we wish to view.
+	 * 
+	 * @param i
 	 */
-	private void showMemberConnections(Person person) {
-		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1().equals(person)) {
-				System.out.println(connections.get(i).getPerson2().getFullName() + "\t\t\t" + connections.get(i).getType());
-			}
-			
-			if (connections.get(i).getPerson2().equals(person)) {
-				System.out.println(connections.get(i).getPerson1().getFullName() + "\t\t\t" + connections.get(i).getType());
-			}
-		}
+	public void removeConnection(int i) {
+		connections.remove(i);
 	}
 	
-	private void addConnection(String userID1, String userID2, String type) throws NotToBeFriendsException, SamePersonException, AlreadyConnectedException, NotToBeClassmatesException, NoAvailableException, NotToBeCoupledException, NotToBeColleaguesException {
+	public boolean validConnection(String userID1, String userID2, String type) {
+		Person person1 = getPerson(userID1);
+		Person person2 = getPerson(userID2);
+		boolean validConnection = false;
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if ((connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals(type)) || (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals(type))) {
+				validConnection = true;
+			}
+		}
+		return validConnection;
+	}
+	
+	/**
+	 * 
+	 * @param userID1
+	 * @param userID2
+	 * @param type
+	 * @throws NotToBeFriendsException
+	 * @throws SamePersonException
+	 * @throws AlreadyConnectedException
+	 * @throws NotToBeClassmatesException
+	 * @throws NoAvailableException
+	 * @throws NotToBeCoupledException
+	 * @throws NotToBeColleaguesException
+	 */
+	public void addConnection(String userID1, String userID2, String type) throws NotToBeFriendsException, SamePersonException, AlreadyConnectedException, NotToBeClassmatesException, NoAvailableException, NotToBeCoupledException, NotToBeColleaguesException {
 		int index1 = memberIndex(userID1);		// get index position for userID1
 		int index2 = memberIndex(userID2);		// get index position for userID2
 		Person person1 = members.get(index1);	// get Person reference for userID1
@@ -100,14 +324,12 @@ public class Driver2 {
 		boolean alreadyFriends = alreadyFriends(person1, person2);
 		boolean alreadyClassmates = alreadyClassmates(person1, person2);
 		boolean alreadyColleagues = alreadyColleagues(person1, person2);
-		
 		/*
 		 * Make sure the user is not trying to connect the same person.
 		 */
 		if (index1 == index2) {
 			throw new SamePersonException("You are trying to connect the same person.");
 		}
-		
 		// types include friend, couple, classmate, colleague
 		if (type.equals("Friend")) {
 			if (alreadyFriends == true) {
@@ -116,7 +338,6 @@ public class Driver2 {
 			else {
 				addFriend(person1, person2);
 			}
-
 		}
 		else if (type.equals("Classmate")) {
 			if (alreadyClassmates == true) {
@@ -139,6 +360,12 @@ public class Driver2 {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @throws NotToBeFriendsException
+	 */
 	private void addFriend(Person person1, Person person2) throws NotToBeFriendsException {
 		int person1Age = person1.getAge();
 		int person2Age = person2.getAge();
@@ -150,7 +377,7 @@ public class Driver2 {
 		else if (person1 instanceof Baby || person2 instanceof Baby) {
 			throw new NotToBeFriendsException("A baby can not have any friends connections.");
 		}
-		else if (person1 instanceof Adult && person2 instanceof Child) {
+		else if ((person1 instanceof Adult && person2 instanceof Child) || (person1 instanceof Child && person2 instanceof Adult)) {
 			throw new NotToBeFriendsException("An adult and a child can not have a friendship connection.");
 		}
 		else if (person1 instanceof Child && person2 instanceof Child && ageGap > 3) {
@@ -161,6 +388,12 @@ public class Driver2 {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @throws NotToBeClassmatesException
+	 */
 	private void addClassmate(Person person1, Person person2) throws NotToBeClassmatesException {
 		if (person1 instanceof Baby || person2 instanceof Baby) {
 			throw new NotToBeClassmatesException("A baby can not have any classmate connections.");
@@ -170,6 +403,13 @@ public class Driver2 {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @throws NoAvailableException
+	 * @throws NotToBeCoupledException
+	 */
 	private void addCouple(Person person1, Person person2) throws NoAvailableException, NotToBeCoupledException {
 		boolean alreadyCoupled = alreadyCoupled(person1, person2);
 		
@@ -187,6 +427,12 @@ public class Driver2 {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @throws NotToBeColleaguesException
+	 */
 	private void addColleague(Person person1, Person person2) throws NotToBeColleaguesException {
 		if (person1 instanceof Baby || person2 instanceof Baby) {
 			throw new NotToBeColleaguesException("A baby can not have any colleague connections.");
@@ -196,6 +442,12 @@ public class Driver2 {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @return
+	 */
 	private boolean alreadyFriends(Person person1, Person person2) {
 		boolean alreadyFriends = false;
 		
@@ -210,6 +462,12 @@ public class Driver2 {
 		return alreadyFriends;
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @return
+	 */
 	private boolean alreadyClassmates(Person person1, Person person2) {
 		boolean alreadyClassmates = false;
 		
@@ -224,6 +482,12 @@ public class Driver2 {
 		return alreadyClassmates;
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @return
+	 */
 	private boolean alreadyCoupled(Person person1, Person person2) {
 		boolean alreadyCoupled = false;
 		
@@ -247,6 +511,12 @@ public class Driver2 {
 		return alreadyCoupled;
 	}
 	
+	/**
+	 * 
+	 * @param person1
+	 * @param person2
+	 * @return
+	 */
 	private boolean alreadyColleagues(Person person1, Person person2) {
 		boolean alreadyColleagues = false;
 		
@@ -262,8 +532,7 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method determines whether or not someone is a member of
-	 * MiniNet based on userID.
+	 * This method determines whether or not someone is a member of MiniNet based on userID.
 	 * @param testUserID to determine if member of MiniNet.
 	 * @return boolean true if userID is member of MiniNet and false otherwise.
 	 */
@@ -279,12 +548,11 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method determines and returns the index position of the
-	 * member with a userID equal to testUserID.
+	 * This method determines and returns the index position of the member with a userID equal to testUserID.
 	 * @param testUserID userID of member whose index position we wish to find.
 	 * @return int Index position of testUserID.
 	 */
-	private int memberIndex(String testUserID) {
+	public int memberIndex(String testUserID) {
 		int index = 0;
 		
 		if (isMember(testUserID) == false) {
@@ -301,47 +569,110 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method adds a member to MiniNet. This method factors is whether the new member
-	 * is an Adult, Child or Baby and requires the declaration of parents if the new
-	 * member is either a Child or Baby.
+	 * 
+	 * @param userID
+	 * @param fullName
+	 * @param age
+	 * @param gender
+	 * @param photo
+	 * @param status
+	 * @param parent1
+	 * @param parent2
+	 * @throws InputErrorException
+	 * @throws ParentsRequiredException
+	 * @throws UserIDInUseException
+	 * @throws InvalidParentException
 	 */
-	private void addMember() {
-		Scanner input = new Scanner(System.in);
-		
-		String newUserID = addUserID();
-		String newFullName = addName();
-		
-		boolean validAge = false;
-		int newAge = 0;
-		do {
-			try {
-				newAge = addAge();
-				validAge = true;
-			}
-			catch (NoSuchAgeException nsae) {
-				System.out.println();
-			}
-			catch (NumberFormatException nfe) {
-				System.out.println("Age must be an integer between 0 and 150 (inclusive)");
-				System.out.println();
-			}
-		} while (!validAge);
-		
-		String newGender = addGender();
-		String newStatus = addStatus();
-		String newPhoto = addPhoto();
-		
-		if (newAge >= 16) {
-			members.add(new Adult(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));			
+	public void addMember(String userID, String fullName, int age, String gender, String photo, String status, String parent1, String parent2) throws InputErrorException, ParentsRequiredException, UserIDInUseException, InvalidParentException {
+		boolean validParents = false;
+		/*
+		 * Make sure that neither userID or fullName are empty Strings.
+		 */
+		if (userID.equals("") || fullName.equals("")) {
+			throw new InputErrorException("userID can not be an empty String.");
 		}
-		else if (newAge < 16 && newAge > 2) {
-			members.add(new Child(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));
-			addParents(newUserID);
+		/*
+		 * Make sure the user enters non-empty Strings for parent1 & parent2 to when
+		 * age is less than 16.
+		 */
+		if ((age < 16 && parent1.equals("")) || (age < 16 && parent2.equals(""))) {
+			throw new ParentsRequiredException("Both parents must be entered when age is less than 16.");
 		}
-		else {
-			members.add(new Baby(newUserID, newFullName, newAge, newGender, newStatus, newPhoto));
-			addParents(newUserID);
+		/*
+		 * Make sure the userID entered by the user is not already in use.
+		 */
+		for (int i = 0; i < members.size(); i++) {
+			if (members.get(i).getUserID().equals(userID)) {
+				throw new UserIDInUseException("This userID is already in use.");
+			}
 		}
+		/*
+		 * Run the validParents method to ensure the parent combination entered by the user
+		 * is valid. This will only run when age is less than 16.
+		 */
+		if (age < 16) {
+			validParents = validParents(parent1, parent2);
+		}
+		
+		if (age >= 16) {
+			members.add(new Adult(userID, fullName, age, gender, photo, status));
+		}
+		else if (age < 16 && age > 2 && validParents == true) {
+			members.add(new Child(userID, fullName, age, gender, photo, status));
+			connections.add(new Connection(getPerson(userID), getPerson(parent1), "Parent"));
+			connections.add(new Connection(getPerson(userID), getPerson(parent2), "Parent"));
+			connections.add(new Connection(getPerson(parent1), getPerson(parent2), "Couple"));
+		}
+		else if (age <= 2 && validParents == true) {
+			members.add(new Baby(userID, fullName, age, gender, photo, status));
+			connections.add(new Connection(getPerson(userID), getPerson(parent1), "Parent"));
+			connections.add(new Connection(getPerson(userID), getPerson(parent2), "Parent"));
+			connections.add(new Connection(getPerson(parent1), getPerson(parent2), "Couple"));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param parent1
+	 * @param parent2
+	 * @return
+	 * @throws InvalidParentException
+	 */
+	public boolean validParents(String parent1, String parent2) throws InvalidParentException {
+		boolean parent1Member = isMember(parent1);
+		boolean parent2Member = isMember(parent2);
+		boolean validParents = false;
+		
+		if (parent1Member == false || parent2Member == false) {
+			throw new InvalidParentException("One (or both) of the parent userID's are invalid");
+		}
+		
+		for (int i = 0; i < connections.size(); i++) {
+			if (connections.get(i).getPerson1().getUserID().equals(parent1) && !(connections.get(i).getPerson2().getUserID().equals(parent2)) && connections.get(i).getType().equals("Couple")) {
+				throw new InvalidParentException("One (or both) of the parent userID's are in a relationship with someone else");
+			}
+			else if (connections.get(i).getPerson2().getUserID().equals(parent1) && !(connections.get(i).getPerson1().getUserID().equals(parent2)) && connections.get(i).getType().equals("Couple")) {
+				throw new InvalidParentException("One (or both) of the parent userID's are in a relationship with someone else");
+			}
+			else if (connections.get(i).getPerson1().getUserID().equals(parent2) && !(connections.get(i).getPerson2().getUserID().equals(parent1)) && connections.get(i).getType().equals("Couple")) {
+				throw new InvalidParentException("One (or both) of the parent userID's are in a relationship with someone else");
+			}
+			else if (connections.get(i).getPerson2().getUserID().equals(parent2) && !(connections.get(i).getPerson1().getUserID().equals(parent1)) && connections.get(i).getType().equals("Couple")) {
+				throw new InvalidParentException("One (or both) of the parent userID's are in a relationship with someone else");
+			}
+		}
+		validParents = true;
+		return validParents;
+	}
+	
+	/**
+	 * 
+	 * @param userID
+	 * @return
+	 */
+	public Person getPerson(String userID) {
+		int index = memberIndex(userID);
+		return members.get(index);
 	}
 	
 	/**
@@ -372,131 +703,6 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method determines whether or not two people are friends on MiniNet.
-	 * @return boolean Value depends on whether the two people are friends on MiniNet.
-	 */
-	private boolean areFriends() {
-		Scanner input = new Scanner(System.in);
-		boolean areFriends = false;
-		boolean correctUserIDs = true;
-		
-		System.out.print("Enter the userID of the first person: ");
-		String userID1 = input.nextLine().toUpperCase().trim();
-		
-		System.out.print("Enter the userID of the second person: ");
-		String userID2 = input.nextLine().toUpperCase().trim();
-		
-		int index1 = memberIndex(userID1);
-		int index2 = memberIndex(userID2);
-		
-		/*
-		 * First we make the userID's inputted by the user represent members of MiniNet.
-		 * Also, we confirm that user has provided two different userID's.
-		 * We see correctUserIDs to false if userID's provided by the user fail either
-		 * of these tests.
-		 */
-		if (index1 < 0 || index2 < 0) {
-			System.out.println("Sorry, either one or both of " + userID1 + " & " + userID2 + " are not members of MiniNet.");
-			correctUserIDs = false;
-		}
-		else if (index1 == index2) {
-			System.out.println("You have entered the same userID [" + userID1 +"] twice.");
-			correctUserIDs = false;
-		}
-		
-		if (correctUserIDs == true) {
-			Person person1 = members.get(index1);
-			Person person2 = members.get(index2);
-			
-			for (int i = 0; i < connections.size(); i++) {
-				if (connections.get(i).getPerson1().equals(person1) && connections.get(i).getPerson2().equals(person2)) {
-					System.out.println("Yes, " + userID1 + " & " + userID2 + " are connected on MiniNet.");
-					areFriends = true;
-				}
-				else if (connections.get(i).getPerson2().equals(person1) && connections.get(i).getPerson1().equals(person2)) {
-					System.out.println("Yes, " + userID1 + " & " + userID2 + " are connected on MiniNet.");
-					areFriends = true;
-				}
-			}
-			
-			if (areFriends == false) {
-				System.out.println("No, " + userID1 + " & " + userID2 + " are not friends on MiniNet.");
-			}
-		}
-		return areFriends;
-	}
-	
-	/**
-	 * This method adds the necessary connections between a Child or Baby with their
-	 * parents. This method calls the validParents() method to ensure the proposed
-	 * parents comply with the MiniNet rules.
-	 * @param userID String userID of the Child or Baby whose parents are being disclosed.
-	 */
-	private void addParents(String userID) {
-		Scanner input = new Scanner(System.in);
-		boolean validParents = false;
-		boolean sameString = false;
-		boolean isMember1 = false;
-		boolean isMember2 = false;
-		int index1;
-		int index2;
-		int newMemberIndex = memberIndex(userID);
-		String stringParent1;
-		String stringParent2;
-		Person newMember = members.get(newMemberIndex);
-		Person parent1;
-		Person parent2;
-		
-		do {
-			try {
-				System.out.print("Enter userID of first parent: ");
-				stringParent1 = input.nextLine().toUpperCase().trim();
-				System.out.print("Enter userID of second parent: ");
-				stringParent2 = input.nextLine().toUpperCase().trim();
-				
-				sameString = stringParent1.equals(stringParent2);
-				isMember1 = isMember(stringParent1); // determine if first parent is member of MiniNet
-				isMember2 = isMember(stringParent2); // determine if second parent is member of MiniNet
-				
-				index1 = memberIndex(stringParent1); // get index of first parent
-				index2 = memberIndex(stringParent2); // get index of second parent
-				
-				parent1 = members.get(index1); // get object reference for first parent
-				parent2 = members.get(index2); // get object reference for second parent
-				
-				validParents = validParents(parent1, parent2);
-				/*
-				 * Advise user if one or both of the userID's are not for a member of MiniNet.
-				 * The user can not exit this process without entering a compliant parent
-				 * combination.
-				 */
-				if (!(isMember1 && isMember2) || stringParent1.equals(stringParent2) || !(validParents)) {
-					System.out.println("The userID's entered are invalid.");
-					System.out.println("Please re-enter parent userID's.");
-					System.out.println();
-				}
-				else {
-					connections.add(new Connection(parent1, newMember, "Parent"));	// note parent1 as parent of newMember
-					connections.add(new Connection(parent2, newMember, "Parent"));	// note parent2 as parent of newMember
-					connections.add(new Connection(newMember, parent1, "Parent"));	// note newMember as child of parent1
-					connections.add(new Connection(newMember, parent2, "Parent"));	// note newMember as child of parent2
-				}
-			}
-			/*
-			 * This catches the exception thrown if the user enters a userID(s) that do
-			 * not belong to any current members of the members ArrayList.
-			 */
-			catch (Exception e)
-			{
-				System.out.println("The userID's entered are invalid.");
-				System.out.println("Please re-enter parent userID's.");
-				System.out.println();
-			}
-		}
-		while((!(isMember1 && isMember2)) || sameString || !(validParents));	
-	}
-	
-	/**
 	 * This method verifies that the two proposed parents comply with the MiniNet rules
 	 * with respect to being a parent.
 	 * @param person1 Person First proposed parent.
@@ -509,7 +715,6 @@ public class Driver2 {
 		boolean samePartner = false;
 		boolean noPartner1 = false;
 		boolean noPartner2 = false;
-		
 		/*
 		 * This if-statement makes sure both proposed parents are adults.
 		 */
@@ -569,225 +774,59 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method obtains and returns the userID for a new member.
-	 * @return String The userID for a new member.
+	 * 
+	 * @param userID1
+	 * @param userID2
+	 * @return
 	 */
-	private String addUserID() {
-		Scanner input = new Scanner(System.in);
-		boolean validUserID = false;
-		String newUserID;
-		
-		do {
-			System.out.print("Enter your unique userID: ");
-			newUserID = input.nextLine().toUpperCase().trim();
-			if (newUserID.isEmpty()) {
-				System.out.println("UserID cannot be an empty string. Try again.");
+	public int degreesOfSeparation(String userID1, String userID2) {
+		int counter = 0;
+		boolean directlyConnected = false;
+		boolean keepGoing = true;
+		Person separation1 = getPerson(userID1);
+		Person separation2 = getPerson(userID2);
+		ArrayList<Connection> userID1Connections = showMemberConnections(separation1);
+		ArrayList<Connection> userID2Connections = showMemberConnections(separation2);
+		ArrayList<String> tempUserIDs = new ArrayList<>();
+		ArrayList<String> tempArrayList1 = new ArrayList<>();
+		ArrayList<String> tempArrayList2 = new ArrayList<>();
+		HashSet<String> mainUserIDs = new HashSet<>();
+		HashSet<String> checkUserIDs = new HashSet<>();
+		/*
+		 * Check if either of the userID's represent an isolated member of MiniNet. An isolated member
+		 * of MiniNet is one that has no connections whatsoever. If either or both of the userID's represent
+		 * an isolated member, then we know that their can be no connection between userID1 and userID2.
+		 */
+		if (userID1Connections.size() == 0 || userID2Connections.size() == 0) {
+			System.out.println("There is no connection chain between " + userID1 + " & " + userID2);
+			return counter;
+		}
+		else {
+			/*
+			 * Check is userID1 and userID2 are directly connected. If there exists a connection between userID1
+			 * and userID2, then they will have zero degrees of separation.
+			 */
+			for (int i = 0; i < userID1Connections.size(); i++) {
+				if ((userID1Connections.get(i).getPerson1() == separation2) || (userID1Connections.get(i).getPerson2() == separation2)) {
+					System.out.println(userID1 + " & " + userID2 + " are directly connected");
+					System.out.println("Therefore, there are zero degrees of separation between " + userID1 + " & " + userID2);
+					directlyConnected = true;
+				}	
 			}
-			else if (isMember(newUserID) == false) {
-				System.out.println("Congratulations! " + newUserID + " is available!");
-				validUserID = true;
+			if (directlyConnected == true) {
+				return counter;
 			}
 			else {
-				System.out.println("Sorry, " + newUserID + " is already taken! Try again!");
-			}
+				counter += 1;
+				mainUserIDs.add(userID2);
+				checkUserIDs.add(userID2);
+				tempUserIDs.add(userID2);
+				System.out.println(counter);
+				System.out.println("Possible Connection");
+				System.out.println("Test");
+			}		
 		}
-		while(!validUserID);	
-		return newUserID;
-	}
-	
-	/**
-	 * This method obtains and returns the full name for a new member.
-	 * @return String The full name of a new member.
-	 */
-	private String addName() {
-		Scanner input = new Scanner(System.in);
-		boolean validName = false;
-		String newName;
-		
-		do {
-			System.out.print("Enter your full name: ");
-			newName = input.nextLine().trim();
-			if (newName.isEmpty()) {
-				System.out.println("Name cannot be an empty string.");
-				System.out.println("Please try again.");
-			}
-			else {
-				validName = true;
-			}
-		} while (!validName);		
-		return newName;
-	}
-	
-	/**
-	 * This method obtains and returns the age of a new member. As per the requirements
-	 * of the assignment, this method throws two Exceptions (NoSuchAgeException &
-	 * NumberFormatException). NoSuchAgeException ensures the age inputted by the user
-	 * is between 0 and 150 (inclusive).
-	 * @return int The age of the new member.
-	 */
-	private int addAge() throws NoSuchAgeException, NumberFormatException {
-		Scanner input = new Scanner(System.in);
-		boolean valid = false;
-		
-		System.out.print("Enter your age: ");
-		String newAgeString = input.nextLine();
-		int newAge = Integer.parseInt(newAgeString);
-				
-		if (newAge < 0 || newAge > 150) {
-			throw new NoSuchAgeException("Invalid age has been entered", newAge);
-		}
-		return newAge;
-	}
-	
-	/**
-	 * This method obtains and returns the gender of a new member.
-	 * @return String The gender of the new member.
-	 */
-	private String addGender() {
-		Scanner input = new Scanner(System.in);
-		boolean valid = false;
-		String response;
-		String gender = "";
-		
-		do {
-			System.out.print("Enter your gender: ");
-			response = input.nextLine().toUpperCase().trim();
-			if (response.equals("M")) {
-				gender = "M";
-				valid = true;
-			}
-			else if (response.equals("F")) {
-				gender = "F";
-				valid = true;
-			}
-			else {
-				System.out.println("Please enter either \"M\" or \"F\".");
-			}
-		} while(!valid);
-		return gender;
-	}
-	
-	/**
-	 * This method obtains and returns the status for a new member.
-	 * @return String The new members status.
-	 */
-	private String addStatus() {
-		Scanner input = new Scanner(System.in);
-		boolean valid = false;
-		String response;
-		String newStatus = "";
-		
-		do {
-			System.out.print("Do you want to include a status? (Y / N): ");
-			response = input.nextLine().toUpperCase().trim();
-			if (response.equals("Y")) {
-				System.out.print("Please enter your status: ");
-				newStatus = input.nextLine().trim();
-				if (newStatus.isEmpty()) {
-					newStatus = "No Status";
-					valid = true;
-				}
-				else {
-					valid = true;
-				}
-			}
-			else if (response.equals("N")) {
-				newStatus = "No Status";
-				valid = true;
-			}
-			else {
-				System.out.println("Please enter either \"Y\" or \"N\".");
-			}
-		} while(!valid);
-		return newStatus;
-	}
-	
-	/**
-	 * This method obtains and returns the photo file for a new member.
-	 * @return String The new members photo file.
-	 */
-	private String addPhoto() {
-		Scanner input = new Scanner(System.in);
-		boolean valid = false;
-		String response;
-		String newPhoto = "";
-		
-		do {
-			System.out.print("Do you want to include a photo? (Y / N): ");
-			response = input.nextLine().toUpperCase().trim();
-			if (response.equals("Y")) {
-				System.out.print("Please enter file name: ");
-				newPhoto = input.nextLine().trim();
-				if (newPhoto.isEmpty()) {
-					newPhoto = "No Photo";
-					valid = true;
-				}
-				else {
-					valid = true;					
-				}
-			}
-			else if (response.equals("N")) {
-				newPhoto = "No Photo";
-				valid = true;
-			}
-			else {
-				System.out.println("Please enter either \"Y\" or \"N\".");
-			}
-		} while(!valid);
-		return newPhoto;
-	}
-	
-	public void run() {
-		
-		System.out.println("Welcome to MiniNet!");
-		
-		populate();
-		
-		// showAllMembers();
-		
-		System.out.println();
-		
-		// showAllConnections();
-		
-		Person tester1 = members.get(2);
-		Person tester2 = members.get(7);
-		boolean hopefully = alreadyFriends(tester1, tester2);
-		System.out.println(hopefully);
-		
-		String no1 = "BEN1984";
-		String no2 = "THEBROW";
-		
-		try {
-			addConnection(no1, no2, "Colleague");
-		}
-		catch (NotToBeFriendsException ntbfe) {
-			System.out.println("No! Not To Be!");
-		}
-		catch (AlreadyConnectedException ace) {
-			System.out.println("No! Already Friends.");
-		}
-		catch (SamePersonException spe) {
-			System.out.println("No! They're the same person stupid.");
-		}
-		catch (NotToBeClassmatesException ntbce) {
-			System.out.println("No! Baby can not be in Classmate connection.");
-		}
-		catch (NoAvailableException nae) {
-			System.out.println("One or both of these members are connected with another adult as a couple");
-		}
-		catch (NotToBeCoupledException ntbce) {
-			System.out.println("A Child or Baby can not be part of a couple.");
-		}
-		catch (NotToBeColleaguesException ntbce) {
-			System.out.println("No! Baby can not be in Colleague connection.");
-		}
-		
-		showAllConnections();
-		
-		// showMemberConnections(tester);
-				
-		//addMember();
-		
+		return counter;
 	}
 	
 }
