@@ -1,25 +1,29 @@
 # MiniNet
 
-## COSC1295 Assignment 2
+## COSC1295 Assignment 2 [Semester 1, 2018]
 
-### Benjamin Donnelly [S3623483]
+## Benjamin Donnelly [S3623483]
 
-#### Assignment 2 for COSC1295 [Semester 1, 2018]
-
-##### GitHub Repository
+### GitHub Repository
 https://github.com/S3623483/MiniNet_Assignment_2.
 
-See [Walkthrough](#walkthrough)
+### Using The MiniNet Application
+To run **MiniNet** from the command line, first ensure __***all***__ `.java` and both `.txt` files are all together in one folder. Also, please make sure both `.txt` files are titled `people.txt` and `relations.txt` as these titles are listed in the applications code. Once this has been done and you are in a terminal screen, change your working directory to the folder containing all of the files and run the following code:
 
-## Walkthrough
+`javac *.java`
+
+`java MiniNet`
+
+Once these commands have been executed, the MiniNet GUI should open and you are free to explore the social network. Please see [Walkthrough](#walkthrough) for a step-by-step guide to using my MiniNet application.
+
+### Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
 
-
-### Main Menu
+#### Main Menu
 When running the application, the user is greeted with the following Main Menu:
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/MainMenu.png" width="500" height="450" />
 
-### Add A Member
+#### Add A Member
 If the user clicks in the **Add A Member** button, they are taken to the following screen:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddMember.png" width="500" height="450" />
@@ -35,7 +39,7 @@ Otherwise, if valid details are entered for a new member, the user will be notif
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddMemberSuccessful.png" width="500" height="250" />
 
-### Display Profile
+#### Display Profile
 If the user clicks on the **Display A Profile** button, they are taken to the following screen:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/SelectProfile.png" width="500" height="450" />
@@ -46,7 +50,7 @@ The list includes __**all**__ current members of MiniNet. The user must select (
 
 The user must click the **Close** button in the *Profile Viewer* before they can re-commence using the main GUI.
 
-### Add A Connection
+#### Add A Connection
 If the user clicks on the **Add A Connection** button, they are taken to the following screen:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddConnection.png" width="500" height="450" />
@@ -61,7 +65,7 @@ Alternatively, if the user creates a valid new connection, the application will 
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddConnectionSuccessful.png" width="500" height="250" />
 
-### Query Connection
+#### Query Connection
 If the user clicks on the **Query Connection** button, they are taken to the following screen:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/QueryConnection.png" width="500" height="450" />
@@ -70,6 +74,5 @@ An Exception is thrown if the user selects the same person in both lists and the
 
 Otherwise, if two different people are selected, the user if notified if they are connected and, if so, a listing of the different connections is provided. This information is presented to the user in a separate window like the following:
 
-
-### Exit
+#### Exit
 The GUI closes and the terminates when the **Exit** button is clicked.
