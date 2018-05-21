@@ -9,11 +9,10 @@
 ##### GitHub Repository
 https://github.com/S3623483/MiniNet_Assignment_2.
 
-##Walkthrough
-Following are screenshots and explanation on how to navigate around my MiniNet Application.
-
 See [Walkthrough](#walkthrough)
 
+## Walkthrough
+Following are screenshots and explanation on how to navigate around my MiniNet Application.
 
 
 ### Main Menu
