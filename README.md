@@ -72,6 +72,8 @@ If the user clicks on the **Query Connection** button, they are taken to the fol
 
 An Exception is thrown if the user selects the same person in both lists and the user is notified of their error in a separate window like the following:
 
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/QueryConnectionError.png" width="500" height="250" />
+
 Otherwise, if two different people are selected, the user if notified if they are connected and, if so, a listing of the different connections is provided. This information is presented to the user in a separate window like the following:
 
 #### Exit
