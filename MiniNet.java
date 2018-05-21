@@ -137,7 +137,11 @@ public class MiniNet extends Application {
 		Button btnExit = new Button("Exit");
 		btnExit.setPadding(new Insets(5, 5, 5, 5));
 		btnExit.setMinWidth(200);
-		btnExit.setOnAction(e -> primaryStage.close());
+		btnExit.setOnAction(e -> {
+			System.out.println("You are now leaving MiniNet.");
+			primaryStage.close();
+			}
+		);
 		
 		VBox layoutCenter = new VBox(20);
 		layoutCenter.getChildren().addAll(textMainMenu, btnDisplayProfile, btnAddMember, btnDeleteMember, btnAddConnection, btnDeleteConnection, btnQueryConnection, btnExit);
@@ -245,18 +249,23 @@ public class MiniNet extends Application {
 					photo.clear();
 					parent1.clear();
 					parent2.clear();
+					System.out.println(userIDInput + " has been successfully added to MiniNet.");
 					inputErrorBox("Member Added", userIDInput + " has been successfully added to MiniNet.");
 				}
 				catch (InputErrorException iee) {
+					System.out.println("userID and fullName can not be empty Strings.");
 					inputErrorBox("Invalid Input", "userID and fullName can not be empty Strings.");
 				}
 				catch (ParentsRequiredException pre) {
+					System.out.println("Both parents must be listed when age is less than 16.");
 					inputErrorBox("Invalid Input", "Both parents must be listed when age is less than 16.");
 				}
 				catch (UserIDInUseException uiue) {
+					System.out.println(userIDInput + " is already in use\nPlease try again.");
 					inputErrorBox("Invalid Input", userIDInput + " is already in use\nPlease try again.");
 				}
 				catch (InvalidParentException ipe) {
+					System.out.println(parent1Input + " & " + parent2Input + " is an invalid parent combination.");
 					inputErrorBox("Invalid Input", parent1Input + " & " + parent2Input + " is an invalid parent combination.");
 				}
 			}
@@ -274,6 +283,7 @@ public class MiniNet extends Application {
 				photo.clear();
 				parent1.clear();
 				parent2.clear();
+				System.out.println("Returning to Main Menu.");
 				primaryStage.setScene(frontPageScene);
 			}
 		);
@@ -322,6 +332,7 @@ public class MiniNet extends Application {
 		btnSelectProfileSelect.setMinWidth(200);
 		btnSelectProfileSelect.setOnAction(e -> {
 			String profileUserID = selectProfileIDListing.getSelectionModel().getSelectedItem();
+			System.out.println("You are now viewing " + profileUserID + "'s MiniNet Profile.");
 			displayProfile(profileUserID + "'s MiniNetProfile", profileUserID);
 			selectProfileIDListing.getSelectionModel().select(0);
 			}
@@ -330,7 +341,11 @@ public class MiniNet extends Application {
 		Button btnSelectProfileBack = new Button("Back");
 		btnSelectProfileBack.setPadding(new Insets(5, 5, 5, 5));
 		btnSelectProfileBack.setMinWidth(200);
-		btnSelectProfileBack.setOnAction(e -> primaryStage.setScene(frontPageScene));
+		btnSelectProfileBack.setOnAction(e -> {
+				System.out.println("Returning to Main Menu.");
+				primaryStage.setScene(frontPageScene);
+			}
+		);
 		
 		VBox selectProfileCenter = new VBox(20);
 		selectProfileCenter.getChildren().addAll(selectProfileHeading, selectProfileIDListing, btnSelectProfileSelect, btnSelectProfileBack);
@@ -373,6 +388,7 @@ public class MiniNet extends Application {
 				String deleteUserID = deleteUserIDListing.getSelectionModel().getSelectedItem();
 				try {
 					useable.remove(deleteUserID);
+					System.out.println(deleteUserID + " has been deleted from MiniNet");
 					updateListView(deleteUserIDListing, deleteUserID);
 					updateListView(connectUserID1Listing, deleteUserID);
 					updateListView(connectUserID2Listing, deleteUserID);
@@ -381,6 +397,7 @@ public class MiniNet extends Application {
 					updateListView(queryConnectionID2Listing, deleteUserID);
 				}
 				catch (NotToBeDeletedException ntbde) {
+					System.out.println(deleteUserID + " can not be deleted");
 					alertBox("Deletion Unsuccessful", deleteUserID + " can not be deleted");
 				}
 			}
@@ -389,7 +406,11 @@ public class MiniNet extends Application {
 		Button btnDeleteMemberBack = new Button("Back");
 		btnDeleteMemberBack.setPadding(new Insets(5, 5, 5, 5));
 		btnDeleteMemberBack.setMinWidth(200);
-		btnDeleteMemberBack.setOnAction(e -> primaryStage.setScene(frontPageScene));
+		btnDeleteMemberBack.setOnAction(e -> {
+				System.out.println("Returning to Main Menu.");
+				primaryStage.setScene(frontPageScene);
+			}
+		);
 		
 		VBox deleteMemberCenter = new VBox(20);
 		deleteMemberCenter.getChildren().addAll(deleteMemberHeading, deleteUserIDListing, btnDelete, btnDeleteMemberBack);
@@ -447,6 +468,7 @@ public class MiniNet extends Application {
 			try {
 				useable.addConnection(connectUserID1, connectUserID2, connectType);
 				String connectionMessage = connectUserID1 + " & " + connectUserID2 + " are now connected as " + connectType;
+				System.out.println(connectionMessage);
 				alertBox("Connection Successful", connectionMessage);
 				connectUserID1Listing.getSelectionModel().select(0);
 				connectUserID2Listing.getSelectionModel().select(0);
@@ -454,30 +476,37 @@ public class MiniNet extends Application {
 			}
 			catch (SamePersonException spe) {
 				String speMessage = connectUserID1 + " & " + connectUserID2 + " are the same person.";
+				System.out.println(speMessage);
 				alertBox("Connection Unsuccessful", speMessage);
 			}
 			catch (AlreadyConnectedException ace) {
 				String aceMessage = connectUserID1 + " & " + connectUserID2 + " are already connected as " + connectType + ".";
+				System.out.println(aceMessage);
 				alertBox("Connection Unsuccessful", aceMessage);
 			}
 			catch (NotToBeFriendsException ntbfe) {
 				String ntbfeMessage = connectUserID1 + " & " + connectUserID2 + " can not be friends on MiniNet.";
+				System.out.println(ntbfeMessage);
 				alertBox("Connection Unsuccessful", ntbfeMessage);
 			}
 			catch (NotToBeClassmatesException ntbclasse) {
 				String ntbclasseMessage = connectUserID1 + " " + connectUserID2 + " can not be classmates on MiniNet.";
+				System.out.println(ntbclasseMessage);
 				alertBox("Connection Unsuccessful", ntbclasseMessage);
 			}
 			catch (NotToBeColleaguesException ntbcolle) {
 				String ntbcolleMessage = connectUserID1 + " & " + connectUserID2 + " can not be colleagues on MiniNet.";
+				System.out.println(ntbcolleMessage);
 				alertBox("Connection Unsuccessful", ntbcolleMessage);
 			}
 			catch (NotToBeCoupledException ntbce) {
 				String ntbceMessage = connectUserID1 + " & " + connectUserID2 + " can not be in a couple on MiniNet.";
+				System.out.println(ntbceMessage);
 				alertBox("Connection Unsuccessful", ntbceMessage);
 			}
 			catch (NoAvailableException nae) {
 				String naeMessage = "One (or both) of " + connectUserID1 + " & " + connectUserID2 + " are already in a relationship.";
+				System.out.println(naeMessage);
 				alertBox("ConnectionUnsuccessful", naeMessage);
 			}
 			}
@@ -487,6 +516,7 @@ public class MiniNet extends Application {
 		btnAddConnectionBack.setPadding(new Insets(5, 5, 5, 5));
 		btnAddConnectionBack.setMinWidth(200);
 		btnAddConnectionBack.setOnAction(e -> {
+				System.out.println("Returning to Main Menu.");
 				connectUserID1Listing.getSelectionModel().select(0);
 				connectUserID2Listing.getSelectionModel().select(0);
 				connectionType.getSelectionModel().select(0);
@@ -550,6 +580,7 @@ public class MiniNet extends Application {
 			try {
 				deleteConnection(disconnectUserID1, disconnectUserID2, disconnectionType);
 				String disconnectionMessage = disconnectUserID1 + " & " + disconnectUserID2 + " are no longer connected as " + disconnectionType + ".";
+				System.out.println(disconnectionMessage);
 				alertBox("Remove Connection Successful", disconnectionMessage);
 				disconnectUserID1Listing.getSelectionModel().select(0);
 				disconnectUserID2Listing.getSelectionModel().select(0);
@@ -558,10 +589,12 @@ public class MiniNet extends Application {
 			}
 			catch (SamePersonException spe) {
 				String speMessage = disconnectUserID1 + " & " + disconnectUserID2 + " are the same person.";
+				System.out.println(speMessage);
 				alertBox("Remove Connection Unsuccessful", speMessage);
 			}
 			catch (InputErrorException iee) {
 				String ieeMessage = "Can not remove this connection because " + disconnectUserID1 + "\n& " + disconnectUserID2 + " are not currently connected as " + disconnectionType + ".";
+				System.out.println(ieeMessage);
 				alertBox("Remove Connection Unsuccessful", ieeMessage);
 			}
 			}
@@ -571,6 +604,7 @@ public class MiniNet extends Application {
 		btnDeleteConnectionBack.setPadding(new Insets(5, 5, 5, 5));
 		btnDeleteConnectionBack.setMinWidth(200);
 		btnDeleteConnectionBack.setOnAction(e -> {
+				System.out.println("Returning to Main Menu.");
 				disconnectUserID1Listing.getSelectionModel().select(0);
 				disconnectUserID2Listing.getSelectionModel().select(0);
 				disconnectType.getSelectionModel().select(0);
@@ -627,10 +661,12 @@ public class MiniNet extends Application {
 			queryConnectionID1Listing.getSelectionModel().select(0);
 			queryConnectionID2Listing.getSelectionModel().select(0);
 			try {
-				queryConnection("Query Successful", queryUserID1, queryUserID2);				
+				System.out.println("Connection query between " + queryUserID1 + " & " + queryUserID2 + " has run successfully.");
+				queryConnection("Query Successful", queryUserID1, queryUserID2);	
 			}
 			catch (InputErrorException iee) {
 				inputErrorBox("Query Unsuccessful", "You have selected the same person in both lists.\nPlease select two different members of MiniNet to query.");
+				System.out.println("You have selected the same person in both lists.\nPlease select two different members of MiniNet to query.");
 			}
 			}
 		);
@@ -641,6 +677,7 @@ public class MiniNet extends Application {
 		btnBack.setOnAction(e -> {
 				queryConnectionID1Listing.getSelectionModel().select(0);
 				queryConnectionID2Listing.getSelectionModel().select(0);
+				System.out.println("Returning to Main Menu.");
 				primaryStage.setScene(frontPageScene);
 			}
 		);
@@ -976,4 +1013,3 @@ public class MiniNet extends Application {
 	}
 	
 }
-
