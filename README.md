@@ -23,6 +23,17 @@ Following are screenshots and explanation on how to navigate around my MiniNet A
 When running the application, the user is greeted with the following Main Menu:
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/MainMenu.png" width="500" height="450" />
 
+#### Display Profile
+If the user clicks on the **Display A Profile** button, they are taken to the following screen:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/SelectProfile.png" width="500" height="450" />
+
+The list includes __**all**__ current members of MiniNet. The user can select (click on) the `userID` of the member whose profile they wish to view and click the **Select** button. Please note that the first item in the member listing is automatically selected which avoids any non-selection errors being thrown. Once the **Select** button has been pressed, the *Profile Viewer* opens in a separate window and looks like the following:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DisplayProfile.png" width="500" height="450" />
+
+The user must click the **Close** button in the *Profile Viewer* before they can re-commence using the main GUI.
+
 #### Add A Member
 If the user clicks in the **Add A Member** button, they are taken to the following screen:
 
@@ -39,18 +50,15 @@ Otherwise, if valid details are entered for a new member, the user will be notif
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddMemberSuccessful.png" width="500" height="250" />
 
-#### Display Profile
-If the user clicks on the **Display A Profile** button, they are taken to the following screen:
+#### Delete A Member
 
-<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/SelectProfile.png" width="500" height="450" />
+If the user clicks in the **Delete A Member** button, they are taken to the following screen:
 
-The list includes __**all**__ current members of MiniNet. The user must select (click on) the `userID` of the member whose profile they wish to view and click the **Select** button. Please note that the first item in the member listing is automatically selected which avoids any non-selection errors being thrown. Once the **Select** button has been pressed, the *Profile Viewer* opens in a separate window and looks like the following:
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeleteMember.png" width="500" height="450" />
 
-<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DisplayProfile.png" width="500" height="450" />
+The list includes __**all**__ current members of MiniNet. The user can select (click on) the `userID` of the member they wish to remove and click the **Remove** button. 
 
-The user must click the **Close** button in the *Profile Viewer* before they can re-commence using the main GUI.
-
-#### Add A Connection
+#### Add Connection
 If the user clicks on the **Add A Connection** button, they are taken to the following screen:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddConnection.png" width="500" height="450" />
