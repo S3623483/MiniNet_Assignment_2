@@ -6,7 +6,12 @@
 
 #### Assignment 2 for COSC1295 [Semester 1, 2018]
 
-## Walkthrough
+##### GitHub Repository
+https://github.com/S3623483/MiniNet_Assignment_2.
+
+See [Walkthrough](#walkthrough)
+
+##Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
 
 ### Main Menu
