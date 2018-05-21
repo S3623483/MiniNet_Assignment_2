@@ -76,5 +76,7 @@ An Exception is thrown if the user selects the same person in both lists and the
 
 Otherwise, if two different people are selected, the user if notified if they are connected and, if so, a listing of the different connections is provided. This information is presented to the user in a separate window like the following:
 
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/QueryConnectionResult.png" width="500" height="450" />
+
 #### Exit
 The GUI closes and the terminates when the **Exit** button is clicked.
