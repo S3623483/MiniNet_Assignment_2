@@ -9,10 +9,12 @@
 ##### GitHub Repository
 https://github.com/S3623483/MiniNet_Assignment_2.
 
-See [Walkthrough](#walkthrough)
-
 ##Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
+
+See [Walkthrough](#walkthrough)
+
+
 
 ### Main Menu
 When running the application, the user is greeted with the following Main Menu:
