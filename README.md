@@ -19,6 +19,13 @@ Once these commands have been executed, the MiniNet GUI should open and you are 
 ### Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
 
+#### Start Up Error
+If the connections listed in `relations.txt` leave a Child and/or Baby member(s) without two parents, they are removed from `members` and the user is notified in a window like the following:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/StartUpError.png" width="500" height="250" />
+
+The user must click the **Ok** button before they are taken to MiniNet's main GUI.
+
 #### Main Menu
 When running the application, the user is greeted with the following Main Menu:
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/MainMenu.png" width="500" height="450" />
