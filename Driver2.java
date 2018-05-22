@@ -13,11 +13,10 @@ public class Driver2 {
 	private ArrayList<Connection> connections = new ArrayList<>();	// ArrayList holding all connections of MiniNet
 	
 	/**
-	 * This method populates MiniNet with members and establishes
-	 * connections between some of the members.
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws InvalidParentException
+	 * This method populates MiniNet with members and establishes connections between some of the members.
+	 * @throws FileNotFoundException If people.txt not found in the directory
+	 * @throws IOException 
+	 * @throws InvalidParentException 
 	 */
 	public void populate() throws FileNotFoundException, IOException, InvalidParentException {
 		String membersFile = "people.txt";
@@ -63,11 +62,13 @@ public class Driver2 {
         /*
          * The only error we need to search are a Child or Baby not being connected to both of their parents.
          * If we find such an example, the Child or Baby is to be removed from MiniNet. This search of connections
-         * for invalid Child or Baby members is done through the checkConnections method.
+         * is done through the checkConnections method with any invalid Child and/or Baby members being added to
+	 * the invalidMembers ArrayList.
          */
         ArrayList<Person> invalidMembers = checkConnections(connections);
         /*
-         * Now we loop through invalidMembers and members to remove any invalid Child or Baby members.
+         * Now we use nested for-loops to loop through both the invalidMembers and members ArrayLists and remove any
+	 * invalid Child or Baby members from MiniNet.
          */
         for (int i = 0; i < invalidMembers.size(); i++) {
         		for (int j = 0; j < members.size(); j++) {
@@ -77,8 +78,8 @@ public class Driver2 {
         		}
         }
         /*
-         * Next, we loop through connections to remove connections including any invalid Child or
-         * Baby members.
+         * Next, we again use nested for-loops to loop through connections to remove connections including any invalid
+	 * Child or Baby members from MiniNet.
          */
         for (int i = 0; i < invalidMembers.size(); i++) {
     			for (int j = 0; j < connections.size(); j++) {
@@ -88,15 +89,18 @@ public class Driver2 {
     			}
         }
         /*
-         * Finally, we throw an InvalidParentException to notify the user upon opening the application.
+         * Finally, we throw an InvalidParentException to notify the user that invalid Child and Baby members have been located
+	 * and removed from MiniNet upon opening the application.
          */
         if (invalidMembers.size() > 0) {
+			System.out.println("One or more Child or Baby members do not have both parents listed.");
         		throw new InvalidParentException("One or more Child or Baby members do not have both parents listed.");
         }
 	}
 	
 	/**
-	 * 
+	 * This method is called if the populate() method throws an exception and is unable to provide an initial population to
+	 * MiniNet. This method will populate MiniNet with hard-coded members and connections.
 	 */
 	public void populate2() {
 		/*
@@ -131,13 +135,12 @@ public class Driver2 {
 		connections.add(new Connection(members.get(2), members.get(7), "Classmate"));
 		connections.add(new Connection(members.get(0), members.get(4), "Colleague"));
 		connections.add(new Connection(members.get(0), members.get(1), "Couple"));		
-		/*
-		 * Add parent / child connections for the Child & Baby members of MiniNet.
-		 */
 		connections.add(new Connection(members.get(0), members.get(10), "Parent"));
+		connections.add(new Connection(members.get(0), members.get(12), "Parent"));
 		connections.add(new Connection(members.get(0), members.get(11), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(10), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(11), "Parent"));
+		connections.add(new Connection(members.get(1), members.get(12), "Parent"));
 	}
 	
 	/**
@@ -172,8 +175,8 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * This method gets the userID for all existing members of MiniNet and returns this in an ArrayList<String>.
+	 * @return An ArrayList<String> holding the userID's for all current members of MiniNet.
 	 */
 	public ArrayList<String> getUserIDs() {
 		ArrayList<String> userIDs = new ArrayList<>();
@@ -184,13 +187,17 @@ public class Driver2 {
 		return userIDs;
 	}
 	
+	/**
+	 * This method returns the members ArrayList<Person> instance variable.
+	 * @return An ArrayList<Person> holding the Person objects for all current members of MiniNet.
+	 */
 	public ArrayList<Person> getMembers() {
 		return members;
 	}
 	
 	/**
-	 * This method displays to the console the userID and fullName of every member
-	 * of MiniNet. Each member is displayed on a separate line.
+	 * This method displays to the console the userID and fullName of every member of MiniNet. Each member is
+	 * displayed on a separate line.
 	 */
 	private void showAllMembers() {
 		for(int i = 0; i < members.size(); i++) {
@@ -199,10 +206,9 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method displays to the console the details of each connection in
-	 * MiniNet. The fullName of both members in the connection and the type of connection
-	 * are printed on a separate for each connection and are separated three tabs ("\t").
-	 * @return
+	 * This method gets and returns an ArrayList<Connection> holding all of the current connections in
+	 * MiniNet.
+	 * @return An ArrayList<Connection> holding the Connection objects for all current connection in MiniNet.
 	 */
 	public ArrayList<Connection> getConnections() {
 		ArrayList<Connection> allConnections = new ArrayList<>();
@@ -213,9 +219,10 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param person
-	 * @return
+	 * This method returns an ArrayList<Connection> which contains all connections involving the person
+	 * inputted as the method argument. 
+	 * @param person The person whose connection listing we wish to examine.
+	 * @return An ArrayList<Connection> containing all connections involving person.
 	 */
 	public ArrayList<Connection> showMemberConnections(Person person) {
 		ArrayList<Connection> memberConnections = new ArrayList<>();
@@ -236,7 +243,7 @@ public class Driver2 {
 	
 	/**
 	 * 
-	 * @param userID
+	 * @param userID 
 	 * @return
 	 */
 	private ArrayList<String> getConnectionUserIDs(String userID) {
@@ -253,9 +260,9 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID
-	 * @throws NotToBeDeletedException
+	 * This method removes the person associated with the userID inputted as the method argument from MiniNet.
+	 * @param userID The unique identifier of the members we wish to remove from MiniNet.
+	 * @throws NotToBeDeletedException If the person object associated with userID is part of a connection of type "Parent".
 	 */
 	public void remove(String userID) throws NotToBeDeletedException {
 		int removeIndex = memberIndex(userID);
@@ -283,8 +290,8 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param i
+	 * This method removes the connection at the given index from the connections ArrayList.
+	 * @param i Index of the connection we wish to remove from the connections ArrayList.
 	 */
 	public void removeConnection(int i) {
 		connections.remove(i);
@@ -304,23 +311,25 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID1
-	 * @param userID2
-	 * @param type
-	 * @throws NotToBeFriendsException
-	 * @throws SamePersonException
-	 * @throws AlreadyConnectedException
-	 * @throws NotToBeClassmatesException
-	 * @throws NoAvailableException
-	 * @throws NotToBeCoupledException
-	 * @throws NotToBeColleaguesException
+	 * This method adds a connection in MiniNet between the members associated userID1 and userID2.
+	 * The connection is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid connection, an exception is thrown and the user is notified.
+	 * @param userID1 The unique identifier of the first person in the proposed new connection.
+	 * @param userID2 The unique identifier of the second person in the proposed new connection.
+	 * @param type The type of connection.
+	 * @throws NotToBeFriendsException If userID1 and/or userID2 are already in a "Couple" conection.
+	 * @throws SamePersonException If the user tries to connect the same person in some way (userID1 = userID2).
+	 * @throws AlreadyConnectedException If the proposed new connections already exists.
+	 * @throws NotToBeClassmatesException If userID1 and/or userID2 is for a Baby member. 
+	 * @throws NoAvailableException If person1 and/or person2 are already in a "Couple" connection.
+	 * @throws NotToBeCoupledException If userID1 and/or userID2 is for a Baby and/or Child member. Only adults can be in a "Couple" connection.
+	 * @throws NotToBeColleaguesException If userID1 and/or userID2 is for a Baby member.
 	 */
 	public void addConnection(String userID1, String userID2, String type) throws NotToBeFriendsException, SamePersonException, AlreadyConnectedException, NotToBeClassmatesException, NoAvailableException, NotToBeCoupledException, NotToBeColleaguesException {
-		int index1 = memberIndex(userID1);		// get index position for userID1
-		int index2 = memberIndex(userID2);		// get index position for userID2
-		Person person1 = members.get(index1);	// get Person reference for userID1
-		Person person2 = members.get(index2);	// get Person reference for userID2
+		int index1 = memberIndex(userID1);					// get index position for userID1
+		int index2 = memberIndex(userID2);					// get index position for userID2
+		Person person1 = members.get(index1);					// get Person reference for userID1
+		Person person2 = members.get(index2);					// get Person reference for userID2
 		boolean alreadyFriends = alreadyFriends(person1, person2);
 		boolean alreadyClassmates = alreadyClassmates(person1, person2);
 		boolean alreadyColleagues = alreadyColleagues(person1, person2);
@@ -361,15 +370,17 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @throws NotToBeFriendsException
+	 * This method adds a "Friend" connection in MiniNet between person1 and person2.
+	 * The connection is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid "Friend" connection, an exception is thrown and the user is notified.
+	 * @param person1 The first person in the proposed new "Friend" connection.
+	 * @param person2 The second person in the proposed new "Friend" connection.
+	 * @throws NotToBeFriendsException If a "Friend" connection between person1 and person2 violates MiniNet rules.
 	 */
 	private void addFriend(Person person1, Person person2) throws NotToBeFriendsException {
-		int person1Age = person1.getAge();
-		int person2Age = person2.getAge();
-		int ageGap = Math.abs(person1Age - person2Age);
+		int person1Age = person1.getAge();			// age of person1
+		int person2Age = person2.getAge();			// age of person2
+		int ageGap = Math.abs(person1Age - person2Age);		// Absolute value of the difference in age between person1 and person2
 				
 		if (person1 instanceof Adult && person2 instanceof Adult) {
 			connections.add(new Connection(person1, person2, "Friend"));
@@ -389,10 +400,12 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @throws NotToBeClassmatesException
+	 * This method adds a "Classmate" connection in MiniNet between person1 and person2.
+	 * The connection is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid "Classmate" connection, an exception is thrown and the user is notified.
+	 * @param person1 The first person in the proposed new "Classmate" connection.
+	 * @param person2 The second person in the proposed new "Classmate" connection.
+	 * @throws NotToBeClassmatesException If person1 and/or person2 is a Baby member.
 	 */
 	private void addClassmate(Person person1, Person person2) throws NotToBeClassmatesException {
 		if (person1 instanceof Baby || person2 instanceof Baby) {
@@ -404,11 +417,13 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @throws NoAvailableException
-	 * @throws NotToBeCoupledException
+	 * This method adds a "Couple" connection in MiniNet between person1 and person2.
+	 * The connection is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid "Couple" connection, an exception is thrown and the user is notified.
+	 * @param person1 The second person in the proposed new "Couple" connection.
+	 * @param person2 The second person in the proposed new "Couple" connection.
+	 * @throws NoAvailableException If person1 and/or person2 are already in a "Couple" connection.
+	 * @throws NotToBeCoupledException If person1 and/or person2 is a Baby and/or Child member. Only adults can be in a "Couple" connection.
 	 */
 	private void addCouple(Person person1, Person person2) throws NoAvailableException, NotToBeCoupledException {
 		boolean alreadyCoupled = alreadyCoupled(person1, person2);
@@ -428,10 +443,12 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @throws NotToBeColleaguesException
+	 * This method adds a "Colleague" connection in MiniNet between person1 and person2.
+	 * The connection is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid "Colleague" connection, an exception is thrown and the user is notified.
+	 * @param person1 The first person in the proposed new "Colleague" connection.
+	 * @param person2 The second person in the proposed new "Colleague" connection.
+	 * @throws NotToBeColleaguesException If person1 and/or person2 is a Baby member.
 	 */
 	private void addColleague(Person person1, Person person2) throws NotToBeColleaguesException {
 		if (person1 instanceof Baby || person2 instanceof Baby) {
@@ -569,19 +586,20 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID
-	 * @param fullName
-	 * @param age
-	 * @param gender
-	 * @param photo
-	 * @param status
-	 * @param parent1
-	 * @param parent2
-	 * @throws InputErrorException
-	 * @throws ParentsRequiredException
-	 * @throws UserIDInUseException
-	 * @throws InvalidParentException
+	 * This method adds a member to MiniNet. The member is added only when valid arguments are passed to the method.
+	 * If the user attempts to create an invalid member, an exception is thrown and the user is notified.
+	 * @param userID The new members unique identifier (compulsory).
+	 * @param fullName The new members full name (compulsory).
+	 * @param age The new members age (compulsory).
+	 * @param gender The new members gender (compulsory).
+	 * @param photo The photo file (optional) for the new member.
+	 * @param status The status (optional) for the new member.
+	 * @param parent1 The unique identifier for the new members first listed parent.
+	 * @param parent2 The unique identifier for the new members second listed parent.
+	 * @throws InputErrorException If userID and/or fullName are empty Strings.
+	 * @throws ParentsRequiredException If parent1 and/or parent2 are empty Strings and the age of the proposed new member is less than 16.
+	 * @throws UserIDInUseException If userID is being used by an existing member of MiniNet.
+	 * @throws InvalidParentException If parent1 and parent2 represent an invalid parent combination.
 	 */
 	public void addMember(String userID, String fullName, int age, String gender, String photo, String status, String parent1, String parent2) throws InputErrorException, ParentsRequiredException, UserIDInUseException, InvalidParentException {
 		boolean validParents = false;
@@ -632,11 +650,11 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param parent1
-	 * @param parent2
-	 * @return
-	 * @throws InvalidParentException
+	 * This determines whether or not two members of MiniNet represent a valid parent combination.
+	 * @param parent1 The unique identifier for the first proposed parent.
+	 * @param parent2 The unique identifier for the second proposed parent.
+	 * @return boolean true if parent1 and parent2 represent a valid parent combination and false otherwise.
+	 * @throws InvalidParentException If the combination of parent1 and parent2 represents an invalid parent combination as per MiniNet's rules.
 	 */
 	public boolean validParents(String parent1, String parent2) throws InvalidParentException {
 		boolean parent1Member = isMember(parent1);
@@ -666,9 +684,9 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID
-	 * @return
+	 * This method return the Person object associated with the unique identifier passed to the method.
+	 * @param userID The unique identifier of the member who Person object we wish to return.
+	 * @return Person object associated with the userID.
 	 */
 	public Person getPerson(String userID) {
 		int index = memberIndex(userID);
