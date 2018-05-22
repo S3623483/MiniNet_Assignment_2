@@ -16,6 +16,16 @@ To run **MiniNet** from the command line, first ensure __***all***__ `.java` and
 
 Once these commands have been executed, the MiniNet GUI should open and you are free to explore the social network. Please see [Walkthrough](#walkthrough) for a step-by-step guide to using my MiniNet application.
 
+### Class Diagram
+
+This is included in my submission as a separate file.
+
+### Exceptions
+
+We have created thirteen exceptions to be thrown, caught and handled throughout our application. These exception include __***all***__ of those specified in the assignment specification.
+
+However, we do note that the `NoSuchAgeException` was never used in the application. This is because we used a `Spinner` object containing numbers from 0 to 150 (inclusive) from which the user would select the age of the new member. Furthermore, the `Spinner` had its initial value set to 0. Therefore, it is not possible for the user to enter an invalid age (`age < 0` or `age > 150`) when adding a new member to MiniNet. 
+
 ### Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
 
