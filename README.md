@@ -20,6 +20,21 @@ Once these commands have been executed, the MiniNet GUI should open and you are 
 
 This is included in my submission as a separate file.
 
+### Functionality
+
+As set out in a the assignment specification, my MiniNet application supports the following functionality:
+1. Display a members profile
+2. Add a new member
+3. Delete an existing member;
+4. Create a new connection;
+5. Delete an existing connection;
+6. Query connection \[Found out if (and how) two existing members are connected\].
+7. Exit \[Close the application\].
+
+### Structure
+
+
+
 ### Exceptions
 
 We have created thirteen exceptions to be thrown, caught and handled throughout our application. These exception include __***all***__ of those specified in the assignment specification.
