@@ -28,26 +28,26 @@ import javafx.stage.Modality;
  */
 public class MiniNet extends Application {
 	
-	Driver2 useable = new Driver2();		//
-	Scene frontPageScene;				//
-	Scene addMemberScene;				//
-	Scene selectProfileScene;			//
-	Scene displayProfileScene;			//
-	Scene queryConnectionScene;			//
-	Scene addConnectionScene;			//
-	Scene deleteMemberScene;			//
-	Scene deleteConnectionScene;			//
-	ListView<String> deleteUserIDListing;		//
-	ListView<String> connectUserID1Listing;		//
-	ListView<String> connectUserID2Listing;		//
-	ListView<String> selectProfileIDListing;	//
-	ListView<String> queryConnectionID1Listing;	//
-	ListView<String> queryConnectionID2Listing;	//
-	ListView<String> disconnectUserID1Listing;	//
-	ListView<String> disconnectUserID2Listing;	//
+	Driver2 useable = new Driver2();		// Object of the Driver Class.
+	Scene frontPageScene;				// Scene for the front page / main menu.
+	Scene addMemberScene;				// Scene where the user can add a member to MiniNet.
+	Scene selectProfileScene;			// Scene where the user can select a member's profile to view.
+	Scene displayProfileScene;			// Scene the display's the selected members MiniNet profile.
+	Scene queryConnectionScene;			// Scene where the user can select userID's and find out if any connections exist betweem them.
+	Scene addConnectionScene;			// Scene where the user can add a connection.
+	Scene deleteMemberScene;			// Scene where the user can delete a member.
+	Scene deleteConnectionScene;			// Scene where the user can delete a connection.
+	ListView<String> deleteUserIDListing;		// Listing to appear on deleteMemberScene.
+	ListView<String> connectUserID1Listing;		// First listing to appear on addConnectionScene.
+	ListView<String> connectUserID2Listing;		// Second listing to appear on addConnectionScene.
+	ListView<String> selectProfileIDListing;	// Listing to appear on selectProfileScene.
+	ListView<String> queryConnectionID1Listing;	// First listing to appear on queryConnectionScene.
+	ListView<String> queryConnectionID2Listing;	// Second listing to appear on queryConnectionScene.
+	ListView<String> disconnectUserID1Listing;	// First listing to appear on deleteConnectionScene.
+	ListView<String> disconnectUserID2Listing;	// Select listing to appear on deleteConnectionScene.
 	
 	/**
-	 * 
+	 * This is the main method of the MiniNet application. It launches the GUI.
 	 * @param args
 	 */
 	public static void main(String args[]) {
@@ -58,7 +58,8 @@ public class MiniNet extends Application {
 	
 	@Override
 	/**
-	 * 
+	 * This contains the coding for the GUI. This method is reponsible for taking instructions / information from the user and
+	 * displaying the scenes / windows in-line with what is requested / provided by the user.
 	 */
 	public void start(Stage primaryStage) throws Exception {
 		
@@ -705,8 +706,8 @@ public class MiniNet extends Application {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * This method returns a ListView<String> containing all of the current userID's.
+	 * @return ListView<String> containing the unique identifier for each member of MiniNet.
 	 */
 	private ListView<String> getListView() {
 		ArrayList<String> userIDs = useable.getUserIDs();
@@ -720,9 +721,10 @@ public class MiniNet extends Application {
 	}
 	
 	/**
-	 * 
-	 * @param title
-	 * @param message
+	 * This method opens a smaller window which advise the user whether or not their request has been successfully carried out.
+	 * This window must be closed before the user can re-commence using the main GUI window.
+	 * @param title Title of the Window.
+	 * @param message Message to be displayed in the window.
 	 */
 	private void alertBox(String title, String message) {
 		Stage window = new Stage();
@@ -747,9 +749,10 @@ public class MiniNet extends Application {
 	}
 	
 	/**
-	 * 
-	 * @param title
-	 * @param message
+	 * This method opens a smaller window which advises the user of an error that the backend coding has encountered.
+	 * This window must be closed before the user can re-commence using the main GUI window.
+	 * @param title Title of the Window.
+	 * @param message Message to be displayed in the window.
 	 */
 	private void inputErrorBox(String title, String message) {
 		Stage inputErrorWindow = new Stage();
@@ -772,11 +775,11 @@ public class MiniNet extends Application {
 		inputErrorWindow.setScene(scene);
 		inputErrorWindow.showAndWait();
 	}
-	
+		
 	/**
-	 * 
-	 * @param title
-	 * @param userID
+	 * This method displays the MiniNet profile of the member selected by the user.
+	 * @param title Title of the new Window / Stage.
+	 * @param userID The unique identifier of the member whose profile the user wishes to view.
 	 */
 	private void displayProfile(String title, String userID) {
 		int index = useable.memberIndex(userID);
@@ -884,14 +887,16 @@ public class MiniNet extends Application {
 		displayProfileWindow.setScene(scene);
 		displayProfileWindow.showAndWait();
 	}
-	
+		
 	/**
-	 * 
-	 * @param userID1
-	 * @param userID2
-	 * @param type
-	 * @throws SamePersonException
-	 * @throws InputErrorException
+	 * This method deletes a connection given by the arguments passed to the method.
+	 * An exception is thrown and the user notified if they select userID's and/or a connection type that does not reflect
+	 * an existing connection.
+	 * @param userID1 The unique identifier of the first person in the connection being deleted.
+	 * @param userID2 The unique identifier of the second person in the connection being deleted.
+	 * @param type The type of connection being deleted.
+	 * @throws SamePersonException If the user selects the same userID in both lists.
+	 * @throws InputErrorException If the userID's and type selected by the user do not represent an existing connection.
 	 */
 	private void deleteConnection(String userID1, String userID2, String type) throws SamePersonException, InputErrorException {
 		ArrayList<Connection> allConnections = useable.getConnections();
@@ -917,11 +922,11 @@ public class MiniNet extends Application {
 	}
 	
 	/**
-	 * 
-	 * @param title
-	 * @param userID1
-	 * @param userID2
-	 * @throws InputErrorException
+	 * This method displays the results of the connection query run by the user in a separate window.
+	 * @param title Title of the new Window / Stage.
+	 * @param userID1 The unique identifier for the first member being queried.
+	 * @param userID2 The unique identifier for the second member being queried.
+	 * @throws InputErrorException If the user selects the same userID in both lists.
 	 */
 	private void queryConnection(String title, String userID1, String userID2) throws InputErrorException {
 		ArrayList<Connection> allConnections = useable.getConnections();
@@ -1004,9 +1009,9 @@ public class MiniNet extends Application {
 	}
 	
 	/**
-	 * 
-	 * @param list
-	 * @param userID
+	 * This method removes an entry given by iserID from a ListView<String>.
+	 * @param list The ListView<String> from which we wish to remove an entry.
+	 * @param userID The unique identifier we wish to remove.
 	 */
 	private void updateListView(ListView<String> list, String userID) {
 		list.getItems().remove(userID);
