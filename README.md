@@ -46,6 +46,8 @@ The `Parent 1 UserID` and `Parent 2 UserID` are only required / read in when the
 
 If one of the above Exceptions are thrown, the application will notify the user in a separate window like the following:
 
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddMemberUnsuccessful.png" width="500" height="250" />
+
 Otherwise, if valid details are entered for a new member, the user will be notified of the new addition in a separate window like the following:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddMemberSuccessful.png" width="500" height="250" />
@@ -56,7 +58,9 @@ If the user clicks in the **Delete A Member** button, they are taken to the foll
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeleteMember.png" width="500" height="450" />
 
-The list includes __**all**__ current members of MiniNet. The user can select (click on) the `userID` of the member they wish to remove and click the **Remove** button. 
+The list includes __**all**__ current members of MiniNet. The user can select (click on) the `userID` of the member they wish to remove and click the **Remove** button. If the user were to select `GREEKFREAK` and click the **Remove** button, the screen immediately changes to the following:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeletedMember.png" width="500" height="450" />
 
 #### Add Connection
 If the user clicks on the **Add A Connection** button, they are taken to the following screen:
@@ -65,13 +69,27 @@ If the user clicks on the **Add A Connection** button, they are taken to the fol
 
 As per the above image, the `Parent` option is not included in the listing of connection types. This is because this connection is established when a member of type Child or Baby is added to MiniNet and, once set, can not be changed.
 
-If the user tries to create an invalid (for example, trying to create a Friend connection between two members who are already friends), will result in the application notifying the user in a separate window like the following:
+The user trying to create an invalid connection (for example, trying to create a Friend connection between two members who are already friends) will result in the application notifying the user in a separate window like the following:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddConnectionUnsuccessful.png" width="500" height="250" />
 
 Alternatively, if the user creates a valid new connection, the application will confirm the connection in a separate window like the following:
 
 <img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/AddConnectionSuccessful.png" width="500" height="250" />
+
+#### Delete Connection
+
+If the user clicks on the **Add A Connection** button, they are taken to the following screen:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeleteConnection.png" width="500" height="450" />
+
+The user trying to delete a non-existent connection will result in the application notifying the user in a separate window like the following:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeleteConnectionUnsuccessful.png" width="500" height="250" />
+
+Alternatively, if the user deletes an existing connection, the application will confirm the connection in a separate window like the following:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/DeleteConnectionSuccessful.png" width="500" height="250" />
 
 #### Query Connection
 If the user clicks on the **Query Connection** button, they are taken to the following screen:
