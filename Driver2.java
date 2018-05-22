@@ -9,14 +9,14 @@ import java.io.*;
  */
 public class Driver2 {
 	
-	private ArrayList<Person> members = new ArrayList<>();		// ArrayList holding all members of MiniNet
+	private ArrayList<Person> members = new ArrayList<>();			// ArrayList holding all members of MiniNet
 	private ArrayList<Connection> connections = new ArrayList<>();	// ArrayList holding all connections of MiniNet
 	
 	/**
 	 * This method populates MiniNet with members and establishes connections between some of the members.
-	 * @throws FileNotFoundException If people.txt not found in the directory
-	 * @throws IOException 
-	 * @throws InvalidParentException 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InvalidParentException
 	 */
 	public void populate() throws FileNotFoundException, IOException, InvalidParentException {
 		String membersFile = "people.txt";
@@ -29,7 +29,7 @@ public class Driver2 {
         BufferedReader membersFileBufferedReader = new BufferedReader(new FileReader(membersFileReader));
         
         while((line1 = membersFileBufferedReader.readLine()) != null) {
-        		String[] parts = line1.split(", ");
+        		String[] parts = line1.split("\\s*,\\s*");
         		int age = Integer.parseInt(parts[2]);
         		/*
         		 * Add members of different type (Adult, Child, Baby) based on their age.
@@ -59,43 +59,6 @@ public class Driver2 {
     		connections.add(new Connection(getPerson(parts[0]), getPerson(parts[1]), parts[2]));
         }
         connectionsFileBufferedReader.close();
-        /*
-         * The only error we need to search are a Child or Baby not being connected to both of their parents.
-         * If we find such an example, the Child or Baby is to be removed from MiniNet. This search of connections
-         * is done through the checkConnections method with any invalid Child and/or Baby members being added to
-	 * the invalidMembers ArrayList.
-         */
-        ArrayList<Person> invalidMembers = checkConnections(connections);
-        /*
-         * Now we use nested for-loops to loop through both the invalidMembers and members ArrayLists and remove any
-	 * invalid Child or Baby members from MiniNet.
-         */
-        for (int i = 0; i < invalidMembers.size(); i++) {
-        		for (int j = 0; j < members.size(); j++) {
-        			if (invalidMembers.get(i) == members.get(j)) {
-        				members.remove(j);
-        			}
-        		}
-        }
-        /*
-         * Next, we again use nested for-loops to loop through connections to remove connections including any invalid
-	 * Child or Baby members from MiniNet.
-         */
-        for (int i = 0; i < invalidMembers.size(); i++) {
-    			for (int j = 0; j < connections.size(); j++) {
-    				if ((invalidMembers.get(i) == connections.get(j).getPerson1()) || (invalidMembers.get(i) == connections.get(j).getPerson2())) {
-    					connections.remove(j);
-    				}
-    			}
-        }
-        /*
-         * Finally, we throw an InvalidParentException to notify the user that invalid Child and Baby members have been located
-	 * and removed from MiniNet upon opening the application.
-         */
-        if (invalidMembers.size() > 0) {
-			System.out.println("One or more Child or Baby members do not have both parents listed.");
-        		throw new InvalidParentException("One or more Child or Baby members do not have both parents listed.");
-        }
 	}
 	
 	/**
@@ -136,17 +99,19 @@ public class Driver2 {
 		connections.add(new Connection(members.get(0), members.get(4), "Colleague"));
 		connections.add(new Connection(members.get(0), members.get(1), "Couple"));		
 		connections.add(new Connection(members.get(0), members.get(10), "Parent"));
-		connections.add(new Connection(members.get(0), members.get(12), "Parent"));
 		connections.add(new Connection(members.get(0), members.get(11), "Parent"));
+		connections.add(new Connection(members.get(0), members.get(12), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(10), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(11), "Parent"));
 		connections.add(new Connection(members.get(1), members.get(12), "Parent"));
 	}
 	
 	/**
-	 * 
-	 * @param connections
-	 * @return
+	 * This method checks the connections of an ArrayList<Connection> to make sure there are
+	 * exactly two "Parent" connections. As per the code, this check is carried out for Child
+	 * and Baby members only.
+	 * @param connections An ArrayList<Connection> of connections.
+	 * @return An ArrayList<Person> containing all members that violate MiniNet's parent requirements.
 	 */
 	private ArrayList<Person> checkConnections(ArrayList<Connection> connections) {
 		ArrayList<Person> invalidMembers = new ArrayList<>();
@@ -196,16 +161,6 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method displays to the console the userID and fullName of every member of MiniNet. Each member is
-	 * displayed on a separate line.
-	 */
-	private void showAllMembers() {
-		for(int i = 0; i < members.size(); i++) {
-			System.out.println(members.get(i).getUserID() + "\t\t\t" + members.get(i).getFullName());
-		}
-	}
-	
-	/**
 	 * This method gets and returns an ArrayList<Connection> holding all of the current connections in
 	 * MiniNet.
 	 * @return An ArrayList<Connection> holding the Connection objects for all current connection in MiniNet.
@@ -242,9 +197,10 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID 
-	 * @return
+	 * This method returns an ArrayList<String> containing the userID's of the connections associated
+	 * with the unique identifier passed as the methods argument.
+	 * @param userID The unique identifier of the member whose connection userID's we wish to collect.
+	 * @return An ArrayList<String> containing the userID's of a selected members connections.
 	 */
 	private ArrayList<String> getConnectionUserIDs(String userID) {
 		ArrayList<String> connectionUserIDs = new ArrayList<>();
@@ -297,6 +253,13 @@ public class Driver2 {
 		connections.remove(i);
 	}
 	
+	/**
+	 * This method determines whether there is an existing connection based on the arguments passed to the method.
+	 * @param userID1 The unique identifier associated with the first person.
+	 * @param userID2 The unique identifier associated with the second person.
+	 * @param type The type of connection.
+	 * @return boolean true if the arguments passed represent an existing connection and false otherwise.
+	 */
 	public boolean validConnection(String userID1, String userID2, String type) {
 		Person person1 = getPerson(userID1);
 		Person person2 = getPerson(userID2);
@@ -326,13 +289,11 @@ public class Driver2 {
 	 * @throws NotToBeColleaguesException If userID1 and/or userID2 is for a Baby member.
 	 */
 	public void addConnection(String userID1, String userID2, String type) throws NotToBeFriendsException, SamePersonException, AlreadyConnectedException, NotToBeClassmatesException, NoAvailableException, NotToBeCoupledException, NotToBeColleaguesException {
-		int index1 = memberIndex(userID1);					// get index position for userID1
-		int index2 = memberIndex(userID2);					// get index position for userID2
-		Person person1 = members.get(index1);					// get Person reference for userID1
-		Person person2 = members.get(index2);					// get Person reference for userID2
-		boolean alreadyFriends = alreadyFriends(person1, person2);
-		boolean alreadyClassmates = alreadyClassmates(person1, person2);
-		boolean alreadyColleagues = alreadyColleagues(person1, person2);
+		int index1 = memberIndex(userID1);		// get index position for userID1
+		int index2 = memberIndex(userID2);		// get index position for userID2
+		Person person1 = members.get(index1);	// get Person reference for userID1
+		Person person2 = members.get(index2);	// get Person reference for userID2
+		boolean alreadyConnected = connectionExists(person1, person2, type);
 		/*
 		 * Make sure the user is not trying to connect the same person.
 		 */
@@ -341,7 +302,7 @@ public class Driver2 {
 		}
 		// types include friend, couple, classmate, colleague
 		if (type.equals("Friend")) {
-			if (alreadyFriends == true) {
+			if (alreadyConnected == true) {
 				throw new AlreadyConnectedException("The two members are already friends.");
 			}
 			else {
@@ -349,7 +310,7 @@ public class Driver2 {
 			}
 		}
 		else if (type.equals("Classmate")) {
-			if (alreadyClassmates == true) {
+			if (alreadyConnected == true) {
 				throw new AlreadyConnectedException("The two members are already friends.");
 			}
 			else {
@@ -357,10 +318,10 @@ public class Driver2 {
 			}
 		}
 		else if (type.equals("Couple")) {
-			addCouple(person1, person2);
-		}
+				addCouple(person1, person2);				
+			}
 		else if (type.equals("Colleague")) {
-			if (alreadyColleagues == true) {
+			if (alreadyConnected == true) {
 				throw new AlreadyConnectedException("The two members are already friends.");
 			}
 			else {
@@ -378,9 +339,9 @@ public class Driver2 {
 	 * @throws NotToBeFriendsException If a "Friend" connection between person1 and person2 violates MiniNet rules.
 	 */
 	private void addFriend(Person person1, Person person2) throws NotToBeFriendsException {
-		int person1Age = person1.getAge();			// age of person1
-		int person2Age = person2.getAge();			// age of person2
-		int ageGap = Math.abs(person1Age - person2Age);		// Absolute value of the difference in age between person1 and person2
+		int person1Age = person1.getAge();
+		int person2Age = person2.getAge();
+		int ageGap = Math.abs(person1Age - person2Age);
 				
 		if (person1 instanceof Adult && person2 instanceof Adult) {
 			connections.add(new Connection(person1, person2, "Friend"));
@@ -459,51 +420,30 @@ public class Driver2 {
 		}
 	}
 	
+	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @return
+	 * This method determines whether there is an existing connection based on the arguments passed to the method.
+	 * @param person1 The first person.
+	 * @param person2 The second person.
+	 * @param type The type of connection.
+	 * @return boolean true if the arguments passed represent an existing connection and false otherwise.
 	 */
-	private boolean alreadyFriends(Person person1, Person person2) {
-		boolean alreadyFriends = false;
+	private boolean connectionExists(Person person1, Person person2, String type) {
+		boolean connectionExists = false;
 		
 		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Friend")) {
-				alreadyFriends = true;
-			}
-			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Friend")) {
-				alreadyFriends = true;
+			if ((connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals(type)) || (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals(type))) {
+				connectionExists = true;
 			}
 		}
-		return alreadyFriends;
+		return connectionExists;
 	}
 	
 	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @return
-	 */
-	private boolean alreadyClassmates(Person person1, Person person2) {
-		boolean alreadyClassmates = false;
-		
-		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Classmate")) {
-				alreadyClassmates = true;
-			}
-			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Classmate")) {
-				alreadyClassmates = true;
-			}
-		}
-		return alreadyClassmates;
-	}
-	
-	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @return
+	 * This method determines whether one or both of the members passed are in a "Couple" connection.
+	 * @param person1 The object for the first person.
+	 * @param person2 The object for the second person.
+	 * @return boolean true if peron1 and/or person2 are already in a "Couple" connection and false otherwise.
 	 */
 	private boolean alreadyCoupled(Person person1, Person person2) {
 		boolean alreadyCoupled = false;
@@ -526,26 +466,6 @@ public class Driver2 {
 			}
 		}
 		return alreadyCoupled;
-	}
-	
-	/**
-	 * 
-	 * @param person1
-	 * @param person2
-	 * @return
-	 */
-	private boolean alreadyColleagues(Person person1, Person person2) {
-		boolean alreadyColleagues = false;
-		
-		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Colleague")) {
-				alreadyColleagues = true;
-			}
-			else if (connections.get(i).getPerson1() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Colleague")) {
-				alreadyColleagues = true;
-			}
-		}
-		return alreadyColleagues;
 	}
 	
 	/**
@@ -694,157 +614,21 @@ public class Driver2 {
 	}
 	
 	/**
-	 * This method prompts the user for the userID of the member whose
-	 * profile they wish to view. If the userID is for a current member,
-	 * the profile will be displayed. If not, the user is advised and
-	 * returned to the main menu
+	 * This method determines whether or not the member associated with the unique identifier passed as the
+	 * argument is in a "Parent" connection.
+	 * @param userID The unique identifier of the member.
+	 * @return boolean true is the member is in a "Parent" connection and false otherwise.
 	 */
-	private void displayProfile() {
-		Scanner input = new Scanner(System.in);
-		System.out.print("Enter the userID of the member whose profile you wish to view: ");
-		String userID = input.nextLine().toUpperCase().trim();
+	public boolean isParent(String userID) {
+		boolean isParent = false;
+		Person person = getPerson(userID);
 		
-		if (isMember(userID) == true) {
-			int index = memberIndex(userID);
-			Person personProfile = members.get(index);
-			System.out.println("UserID: \t\t" + members.get(index).getUserID());
-			System.out.println();
-			System.out.println("Name: \t\t" + members.get(index).getFullName());
-			System.out.println("Age: \t\t" + members.get(index).getAge());
-			System.out.println("Gender: \t\t" + members.get(index).getGender());
-			System.out.println("Status: \t\t" + members.get(index).getStatus());
-			System.out.println("Photo: \t\t" + members.get(index).getPhoto());
-			System.out.println();
-			System.out.println("Connections:");
-			showMemberConnections(personProfile);
-		}	
-	}
-	
-	/**
-	 * This method verifies that the two proposed parents comply with the MiniNet rules
-	 * with respect to being a parent.
-	 * @param person1 Person First proposed parent.
-	 * @param person2 Person Second proposed parent.
-	 * @return boolean Value depending on whether person1 and person2 are a valid parent combination.
-	 */
-	private boolean validParents(Person person1, Person person2) {
-		boolean valid = false;
-		boolean bothAdults = false;
-		boolean samePartner = false;
-		boolean noPartner1 = false;
-		boolean noPartner2 = false;
-		/*
-		 * This if-statement makes sure both proposed parents are adults.
-		 */
-		if (person1 instanceof Adult && person2 instanceof Adult) {
-			bothAdults = true;
-		}
-		/*
-		 * These logic statements makes sure both proposed parents are each others partner and switches
-		 * samePartner to true is this condition is met. We need to ensure this as all couples / parents
-		 * in MiniNet are mutually exclusive. We note that if both person1 and person2 have null partners,
-		 * they are valid parents and the else-if statement will switch noPartner to true. samePartner and
-		 * noPartner will remain false only if one or both of the proposed parents have a different partner.
-		 */
 		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person1 && connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Partner")) {
-				samePartner = true;
-			}
-			else if (connections.get(i).getPerson2() == person2 && connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Partner")) {
-				samePartner = true;
+			if ((connections.get(i).getPerson1() == person && connections.get(i).getType().equals("Parent")) || (connections.get(i).getPerson2() == person && connections.get(i).getType().equals("Parent"))) {
+				isParent = true;
 			}
 		}
-		/*
-		 * These logic statements determine whether or not parent2 is in a connection with type partner.
-		 * If no such connection is found for parent2, noPartner1
-		 */
-		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person1 && connections.get(i).getType().equals("Partner")) {
-				noPartner1 = false;
-			}
-			else if (connections.get(i).getPerson2() == person1 && connections.get(i).getType().equals("Partner")) {
-				noPartner1 = false;
-			}
-		}
-		/*
-		 * These logic statements determine whether or not parent2 is in a connection with type partner.
-		 * If no such connection is found for parent2, noPartner1
-		 */
-		for (int i = 0; i < connections.size(); i++) {
-			if (connections.get(i).getPerson1() == person2 && connections.get(i).getType().equals("Partner")) {
-				noPartner2 = false;
-			}
-			else if (connections.get(i).getPerson2() == person2 && connections.get(i).getType().equals("Partner")) {
-				noPartner2 = false;
-			}
-		}
-		/*
-		 * This if-statement checks the results of bothAdults, samePartner and noPartner and switches
-		 * valid to true if the two people form a valid parent combination. 
-		 */
-		if (bothAdults && samePartner) {
-			valid = true;
-		}
-		else if (bothAdults && noPartner1 && noPartner2) {
-			valid = true;
-		}
-		return valid;
-	}
-	
-	/**
-	 * 
-	 * @param userID1
-	 * @param userID2
-	 * @return
-	 */
-	public int degreesOfSeparation(String userID1, String userID2) {
-		int counter = 0;
-		boolean directlyConnected = false;
-		boolean keepGoing = true;
-		Person separation1 = getPerson(userID1);
-		Person separation2 = getPerson(userID2);
-		ArrayList<Connection> userID1Connections = showMemberConnections(separation1);
-		ArrayList<Connection> userID2Connections = showMemberConnections(separation2);
-		ArrayList<String> tempUserIDs = new ArrayList<>();
-		ArrayList<String> tempArrayList1 = new ArrayList<>();
-		ArrayList<String> tempArrayList2 = new ArrayList<>();
-		HashSet<String> mainUserIDs = new HashSet<>();
-		HashSet<String> checkUserIDs = new HashSet<>();
-		/*
-		 * Check if either of the userID's represent an isolated member of MiniNet. An isolated member
-		 * of MiniNet is one that has no connections whatsoever. If either or both of the userID's represent
-		 * an isolated member, then we know that their can be no connection between userID1 and userID2.
-		 */
-		if (userID1Connections.size() == 0 || userID2Connections.size() == 0) {
-			System.out.println("There is no connection chain between " + userID1 + " & " + userID2);
-			return counter;
-		}
-		else {
-			/*
-			 * Check is userID1 and userID2 are directly connected. If there exists a connection between userID1
-			 * and userID2, then they will have zero degrees of separation.
-			 */
-			for (int i = 0; i < userID1Connections.size(); i++) {
-				if ((userID1Connections.get(i).getPerson1() == separation2) || (userID1Connections.get(i).getPerson2() == separation2)) {
-					System.out.println(userID1 + " & " + userID2 + " are directly connected");
-					System.out.println("Therefore, there are zero degrees of separation between " + userID1 + " & " + userID2);
-					directlyConnected = true;
-				}	
-			}
-			if (directlyConnected == true) {
-				return counter;
-			}
-			else {
-				counter += 1;
-				mainUserIDs.add(userID2);
-				checkUserIDs.add(userID2);
-				tempUserIDs.add(userID2);
-				System.out.println(counter);
-				System.out.println("Possible Connection");
-				System.out.println("Test");
-			}		
-		}
-		return counter;
+		return isParent;
 	}
 	
 }
