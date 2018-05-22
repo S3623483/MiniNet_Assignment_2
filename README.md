@@ -8,7 +8,13 @@
 https://github.com/S3623483/MiniNet_Assignment_2.
 
 ### Using The MiniNet Application
-To run **MiniNet** from the command line, first ensure __***all***__ `.java` and both `.txt` files are all together in one folder. Also, please make sure both `.txt` files are titled `people.txt` and `relations.txt` as these titles are listed in the applications code. Once this has been done and you are in a terminal screen, change your working directory to the folder containing all of the files and run the following code:
+To run **MiniNet** from the command line, first ensure __***all***__ `.java` and both `.txt` files are all together in one folder. Also, please make sure both `.txt` files are titled `people.txt` and `relations.txt` as these titles are listed in the applications code. Finally, please ensure that any people and connections being added to the MiniNet application are done so in-line with the following conventions:
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/PersonConstructor.png" width="700" height="75" />
+
+<img src="https://github.com/S3623483/MiniNet_Assignment_2/blob/master/Screenshots/ConnectionConstructor.png" width="500" height="75" />
+
+Where `userID` in the person constructor is the unique identifier for each member of MiniNet. Once this has been done and you are in a terminal screen, change your working directory to the folder containing all of the files and run the following code:
 
 `javac *.java`
 
@@ -31,15 +37,19 @@ As set out in a the assignment specification, my MiniNet application supports th
 6. Query connection \[Found out if (and how) two existing members are connected\].
 7. Exit \[Close the application\].
 
-### Structure
-
-
-
 ### Exceptions
 
 We have created thirteen exceptions to be thrown, caught and handled throughout our application. These exception include __***all***__ of those specified in the assignment specification.
 
 However, we do note that the `NoSuchAgeException` was never used in the application. This is because we used a `Spinner` object containing numbers from 0 to 150 (inclusive) from which the user would select the age of the new member. Furthermore, the `Spinner` had its initial value set to 0. Therefore, it is not possible for the user to enter an invalid age (`age < 0` or `age > 150`) when adding a new member to MiniNet. 
+
+### Application Limitations
+
+I was unable to properly set up the embedded database connection. I tried but could not get it to work prooperly. I did not include my `MiniNetDatabase.java` file in my submission because I was concerned it would affect compilation. However, the work I did complete towards establishing the embedded database connection can be found in my GitHub repository [here](https://github.com/S3623483/MiniNet_Assignment_2/blob/master/MiniNetDatabase.java).
+
+While I did not fully complete the task, I hope the work I was able to complete might warrant being awarded partial marks for this component of the assignment.
+
+Finally, if `person.txt` is not in the directory, then an error message is supplied to the screen (see below) with members and connections being populated through hard code.
 
 ### Walkthrough
 Following are screenshots and explanation on how to navigate around my MiniNet Application.
