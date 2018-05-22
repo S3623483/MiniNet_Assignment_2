@@ -28,23 +28,23 @@ import javafx.stage.Modality;
  */
 public class MiniNet extends Application {
 	
-	Driver2 useable = new Driver2();		// Object of the Driver Class.
-	Scene frontPageScene;				// Scene for the front page / main menu.
-	Scene addMemberScene;				// Scene where the user can add a member to MiniNet.
-	Scene selectProfileScene;			// Scene where the user can select a member's profile to view.
-	Scene displayProfileScene;			// Scene the display's the selected members MiniNet profile.
-	Scene queryConnectionScene;			// Scene where the user can select userID's and find out if any connections exist betweem them.
-	Scene addConnectionScene;			// Scene where the user can add a connection.
-	Scene deleteMemberScene;			// Scene where the user can delete a member.
-	Scene deleteConnectionScene;			// Scene where the user can delete a connection.
-	ListView<String> deleteUserIDListing;		// Listing to appear on deleteMemberScene.
-	ListView<String> connectUserID1Listing;		// First listing to appear on addConnectionScene.
-	ListView<String> connectUserID2Listing;		// Second listing to appear on addConnectionScene.
-	ListView<String> selectProfileIDListing;	// Listing to appear on selectProfileScene.
-	ListView<String> queryConnectionID1Listing;	// First listing to appear on queryConnectionScene.
-	ListView<String> queryConnectionID2Listing;	// Second listing to appear on queryConnectionScene.
-	ListView<String> disconnectUserID1Listing;	// First listing to appear on deleteConnectionScene.
-	ListView<String> disconnectUserID2Listing;	// Select listing to appear on deleteConnectionScene.
+	private Driver2 useable = new Driver2();				// Object of the Driver Class.
+	private Scene frontPageScene;						// Scene for the front page / main menu.
+	private Scene addMemberScene;						// Scene where the user can add a member to MiniNet.
+	private Scene selectProfileScene;					// Scene where the user can select a member's profile to view.
+	private Scene displayProfileScene;					// Scene the display's the selected members MiniNet profile.
+	private Scene queryConnectionScene;					// Scene where the user can select userID's and find out if any connections exist betweem them.
+	private Scene addConnectionScene;					// Scene where the user can add a connection.
+	private Scene deleteMemberScene;						// Scene where the user can delete a member.
+	private Scene deleteConnectionScene;					// Scene where the user can delete a connection.
+	private ListView<String> deleteUserIDListing;		// Listing to appear on deleteMemberScene.
+	private ListView<String> connectUserID1Listing;		// First listing to appear on addConnectionScene.
+	private ListView<String> connectUserID2Listing;		// Second listing to appear on addConnectionScene.
+	private ListView<String> selectProfileIDListing;		// Listing to appear on selectProfileScene.
+	private ListView<String> queryConnectionID1Listing;	// First listing to appear on queryConnectionScene.
+	private ListView<String> queryConnectionID2Listing;	// Second listing to appear on queryConnectionScene.
+	private ListView<String> disconnectUserID1Listing;	// First listing to appear on deleteConnectionScene.
+	private ListView<String> disconnectUserID2Listing;	// Select listing to appear on deleteConnectionScene.
 	
 	/**
 	 * This is the main method of the MiniNet application. It launches the GUI.
@@ -58,7 +58,7 @@ public class MiniNet extends Application {
 	
 	@Override
 	/**
-	 * This contains the coding for the GUI. This method is reponsible for taking instructions / information from the user and
+	 * This contains the coding for the GUI. This method is responsible for taking instructions / information from the user and
 	 * displaying the scenes / windows in-line with what is requested / provided by the user.
 	 */
 	public void start(Stage primaryStage) throws Exception {
@@ -563,7 +563,7 @@ public class MiniNet extends Application {
 		disconnectUserID2Listing.setMaxHeight(100);
 		
 		ListView<String> disconnectType = new ListView<>();
-		disconnectType.getItems().addAll("Friend", "Classmate", "Colleague");
+		disconnectType.getItems().addAll("Friend", "Classmate", "Colleague", "Couple");
 		disconnectType.getSelectionModel().select(0);
 		disconnectType.setMaxHeight(100);
 		
@@ -597,6 +597,12 @@ public class MiniNet extends Application {
 				String ieeMessage = "Can not remove this connection because " + disconnectUserID1 + "\n& " + disconnectUserID2 + " are not currently connected as " + disconnectionType + ".";
 				System.out.println(ieeMessage);
 				alertBox("Remove Connection Unsuccessful", ieeMessage);
+			}
+			catch (ParentsRequiredException pre) {
+				String ieeMessage = disconnectUserID1 + " & " + disconnectUserID2 + " are parents and can not be separated in MiniNet.";
+				System.out.println(ieeMessage);
+				alertBox("Remove Connection Unsuccessful", ieeMessage);
+				
 			}
 			}
 		);
@@ -665,7 +671,7 @@ public class MiniNet extends Application {
 				System.out.println("Connection query between " + queryUserID1 + " & " + queryUserID2 + " has run successfully.");
 				queryConnection("Query Successful", queryUserID1, queryUserID2);	
 			}
-			catch (InputErrorException iee) {
+			catch (SamePersonException spe) {
 				inputErrorBox("Query Unsuccessful", "You have selected the same person in both lists.\nPlease select two different members of MiniNet to query.");
 				System.out.println("You have selected the same person in both lists.\nPlease select two different members of MiniNet to query.");
 			}
@@ -775,7 +781,7 @@ public class MiniNet extends Application {
 		inputErrorWindow.setScene(scene);
 		inputErrorWindow.showAndWait();
 	}
-		
+	
 	/**
 	 * This method displays the MiniNet profile of the member selected by the user.
 	 * @param title Title of the new Window / Stage.
@@ -883,11 +889,11 @@ public class MiniNet extends Application {
 		BorderPane.setAlignment(displayProfileAuthor, Pos.CENTER);
 		BorderPane.setMargin(displayProfileAuthor, new Insets(10, 10, 10, 10));
 		
-		Scene scene = new Scene(displayProfile, 750, 600);
-		displayProfileWindow.setScene(scene);
+		displayProfileScene = new Scene(displayProfile, 750, 600);
+		displayProfileWindow.setScene(displayProfileScene);
 		displayProfileWindow.showAndWait();
 	}
-		
+	
 	/**
 	 * This method deletes a connection given by the arguments passed to the method.
 	 * An exception is thrown and the user notified if they select userID's and/or a connection type that does not reflect
@@ -898,10 +904,12 @@ public class MiniNet extends Application {
 	 * @throws SamePersonException If the user selects the same userID in both lists.
 	 * @throws InputErrorException If the userID's and type selected by the user do not represent an existing connection.
 	 */
-	private void deleteConnection(String userID1, String userID2, String type) throws SamePersonException, InputErrorException {
+	private void deleteConnection(String userID1, String userID2, String type) throws SamePersonException, InputErrorException, ParentsRequiredException {
 		ArrayList<Connection> allConnections = useable.getConnections();
 		Person disconnect1 = useable.getPerson(userID1);
 		Person disconnect2 = useable.getPerson(userID2);
+		boolean isParent1 = useable.isParent(userID1);
+		boolean isParent2 = useable.isParent(userID2);
 		
 		if (userID1.equals(userID2)) {
 			throw new SamePersonException("You are trying to connect the same person.");
@@ -911,6 +919,10 @@ public class MiniNet extends Application {
 		
 		if (validConnection == false) {
 			throw new InputErrorException("Can not remove this connection because " + userID1 + " & " + userID2 + " are not currently connected as " + type);
+		}
+		
+		if (validConnection == true && isParent1 == true && isParent2 == true && type.equals("Couple")) {
+			throw new ParentsRequiredException(userID1 + " & " + userID2 + " are parent and can not be separated in MiniNet.");
 		}
 		
 		for (int i = 0; i < allConnections.size(); i++) {
@@ -928,7 +940,7 @@ public class MiniNet extends Application {
 	 * @param userID2 The unique identifier for the second member being queried.
 	 * @throws InputErrorException If the user selects the same userID in both lists.
 	 */
-	private void queryConnection(String title, String userID1, String userID2) throws InputErrorException {
+	private void queryConnection(String title, String userID1, String userID2) throws SamePersonException {
 		ArrayList<Connection> allConnections = useable.getConnections();
 		ArrayList<String> connectionTypesAL = new ArrayList<>();
 		ListView<String> connectionTypesLV = new ListView<>();
@@ -938,7 +950,7 @@ public class MiniNet extends Application {
 		int counter = 0;
 		
 		if (userID1.equals(userID2)) {
-			throw new InputErrorException("You are querying the same member");
+			throw new SamePersonException("You are querying the same member");
 		}
 		
 		for (int i = 0; i < allConnections.size(); i++) {
