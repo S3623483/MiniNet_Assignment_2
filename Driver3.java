@@ -297,11 +297,11 @@ public class Driver2 {
 	}
 	
 	/**
-	 * 
-	 * @param userID1
-	 * @param userID2
-	 * @param type
-	 * @return
+	 * This method determine whether a connection of the type passed to the method exists between members given by userID1 and userID2.
+	 * @param userID1 The unique identifier of the first person in the possible connection being tested.
+	 * @param userID2 The unique identifier of the second person in the possible connection being tested.
+	 * @param type The type of connection being tested.
+	 * @return boolean true if the members associated by userID1 and userID2 share a connection of the type passed to the method and false otherwise.
 	 */
 	public boolean validConnection(String userID1, String userID2, String type) {
 		Person person1 = getPerson(userID1);
@@ -656,33 +656,6 @@ public class Driver2 {
 	public Person getPerson(String userID) {
 		int index = memberIndex(userID);
 		return members.get(index);
-	}
-	
-	/**
-	 * This method prompts the user for the userID of the member whose
-	 * profile they wish to view. If the userID is for a current member,
-	 * the profile will be displayed. If not, the user is advised and
-	 * returned to the main menu
-	 */
-	private void displayProfile() {
-		Scanner input = new Scanner(System.in);
-		System.out.print("Enter the userID of the member whose profile you wish to view: ");
-		String userID = input.nextLine().toUpperCase().trim();
-		
-		if (isMember(userID) == true) {
-			int index = memberIndex(userID);
-			Person personProfile = members.get(index);
-			System.out.println("UserID: \t\t" + members.get(index).getUserID());
-			System.out.println();
-			System.out.println("Name: \t\t" + members.get(index).getFullName());
-			System.out.println("Age: \t\t" + members.get(index).getAge());
-			System.out.println("Gender: \t\t" + members.get(index).getGender());
-			System.out.println("Status: \t\t" + members.get(index).getStatus());
-			System.out.println("Photo: \t\t" + members.get(index).getPhoto());
-			System.out.println();
-			System.out.println("Connections:");
-			showMemberConnections(personProfile);
-		}	
 	}
 	
 	/**
